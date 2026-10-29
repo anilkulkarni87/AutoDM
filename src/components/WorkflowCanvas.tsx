@@ -731,7 +731,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                 Zero-Worker Edge Guarantee
               </span>
               <p>
-                Unlike OpenInstaDM, this step does not require an active Node worker or Redis server. It executes as a stateless step function on Vercel Edge + Inngest durable storage.
+                This step does not require an active Node worker daemon or Redis server. It executes as a stateless step function on Vercel Edge + Inngest durable storage.
               </p>
             </div>
           </div>

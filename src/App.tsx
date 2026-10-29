@@ -12,6 +12,7 @@ import { SelfHostManager } from './components/SelfHostManager';
 import { LandingPage } from './components/LandingPage';
 import { DocsView } from './components/DocsView';
 import { AuthModal } from './components/AuthModal';
+import { NonTechSetupWizard } from './components/NonTechSetupWizard';
 import {
   Organization,
   Workspace,
@@ -41,6 +42,7 @@ export default function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showCodeExport, setShowCodeExport] = useState(false);
   const [showPhonePreview, setShowPhonePreview] = useState(false);
+  const [showSetupWizard, setShowSetupWizard] = useState(false);
   const [selectedPreviewCampaign, setSelectedPreviewCampaign] = useState<Campaign | undefined>(undefined);
 
   // Authentication state
@@ -265,6 +267,7 @@ export default function App() {
         onOpenCodeExport={() => setShowCodeExport(true)}
         onOpenLanding={() => setViewMode('landing')}
         onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenSetupWizard={() => setShowSetupWizard(true)}
         viewMode={viewMode}
         setViewMode={setViewMode}
         currentUser={currentUser}
@@ -280,6 +283,7 @@ export default function App() {
             setActiveTab('docs');
           }}
           onOpenSimulator={() => setShowQuickSimulate(true)}
+          onOpenSetupWizard={() => setShowSetupWizard(true)}
         />
       ) : (
         <>
@@ -428,6 +432,13 @@ export default function App() {
           setCurrentUser(null);
           showToast('Signed out successfully');
         }}
+      />
+
+      {/* Non-Technical 1-Click Setup Wizard */}
+      <NonTechSetupWizard
+        isOpen={showSetupWizard}
+        onClose={() => setShowSetupWizard(false)}
+        onLaunchConsole={() => setViewMode('app')}
       />
 
       {/* Quick Simulate Comment Modal */}

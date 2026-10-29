@@ -10,6 +10,7 @@ import {
   User,
   Globe,
   LayoutDashboard,
+  Zap,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -19,6 +20,7 @@ interface NavbarProps {
   onOpenCodeExport: () => void;
   onOpenLanding: () => void;
   onOpenAuth: () => void;
+  onOpenSetupWizard?: () => void;
   viewMode: 'landing' | 'app';
   setViewMode: (mode: 'landing' | 'app') => void;
   currentUser: {
@@ -36,6 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCodeExport,
   onOpenLanding,
   onOpenAuth,
+  onOpenSetupWizard,
   viewMode,
   setViewMode,
   currentUser,
@@ -206,6 +209,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           <FileCode2 className="w-3.5 h-3.5 text-indigo-400" />
           <span>Export Code</span>
         </button>
+
+        {onOpenSetupWizard && (
+          <button
+            onClick={onOpenSetupWizard}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-400 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-800/60 rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+            title="1-Click Self-Host Wizard (Groq AI Free Tier + Vercel)"
+          >
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span className="hidden sm:inline">1-Click Self-Host</span>
+            <span className="sm:hidden">Self-Host</span>
+          </button>
+        )}
 
         <button
           onClick={onOpenSimulator}

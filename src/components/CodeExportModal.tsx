@@ -584,7 +584,7 @@ Return JSON:
               }`}
             >
               <Flame className="w-3.5 h-3.5" />
-              <span>Why Better Than OpenInstaDM</span>
+              <span>Edge vs Traditional Worker Fleet</span>
             </button>
           </div>
 
@@ -614,7 +614,7 @@ Return JSON:
             <div className="space-y-6 font-sans">
               <div>
                 <h4 className="text-base font-bold text-white tracking-tight">
-                  Why This Serverless Architecture is Better Than OpenInstaDM
+                  Serverless Edge Architecture vs Traditional Worker Fleets
                 </h4>
                 <p className="text-xs text-slate-400 mt-1">
                   Comparing the legacy background worker model against our edge-native + Inngest stack.
@@ -626,8 +626,8 @@ Return JSON:
                   <thead className="bg-slate-900 text-slate-300 border-b border-slate-800">
                     <tr>
                       <th className="py-3 px-4 font-bold">Operational Dimension</th>
-                      <th className="py-3 px-4 font-bold text-red-400">🛠️ OpenInstaDM Architecture</th>
-                      <th className="py-3 px-4 font-bold text-emerald-400">⚡ Proposed Serverless Architecture</th>
+                      <th className="py-3 px-4 font-bold text-red-400">🛠️ Traditional Worker Daemon (Node + Redis)</th>
+                      <th className="py-3 px-4 font-bold text-emerald-400">⚡ Serverless Edge Architecture</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/80 text-slate-300">

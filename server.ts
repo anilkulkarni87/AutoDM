@@ -24,6 +24,10 @@ const ai = new GoogleGenAI({
   },
 });
 
+// Groq AI Free Tier configuration (https://console.groq.com/keys)
+let activeGroqApiKey = process.env.GROQ_API_KEY || '';
+let preferredGroqModel = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+
 // ==========================================
 // In-Memory Multi-Tenant State (Turso SQLite emulation)
 // ==========================================
@@ -472,10 +476,10 @@ const db: DbState = {
 };
 
 // ==========================================
-// Semantic & AI Intent Engine (Gemini 3.8 Flash + Fast Heuristic Fallback)
+// Semantic & AI Intent Engine (Groq AI Free Tier LPU + Gemini + Fast Heuristic Fallback)
 // ==========================================
 
-async function classifyCommentIntentWithGemini(
+async function classifyCommentIntent(
   commentText: string,
   targetCampaigns: any[]
 ): Promise<{
@@ -486,14 +490,17 @@ async function classifyCommentIntentWithGemini(
   detectedIntent: string;
   reasoning: string;
   suggestedReply?: string;
+  aiProvider?: string;
+  modelUsed?: string;
+  latencyMs?: number;
 }> {
-  // Check exact/fuzzy match first for fast path
+  const startTime = Date.now();
+  // Check exact match first for fast path
   const normalizedComment = commentText.trim().toLowerCase();
   
   for (const campaign of targetCampaigns) {
     if (!campaign.isActive) continue;
     
-    // Exact match
     for (const kw of campaign.keywords) {
       const normalizedKw = kw.toLowerCase();
       if (normalizedComment.includes(normalizedKw)) {
@@ -503,14 +510,87 @@ async function classifyCommentIntentWithGemini(
           matchedKeyword: kw,
           confidence: 0.99,
           detectedIntent: `EXACT_MATCH_${kw}`,
-          reasoning: `Found exact keyword match "${kw}" in comment text.`,
+          reasoning: `Exact keyword "${kw}" detected in user comment.`,
           suggestedReply: `Sending you the link for ${kw} right now!`,
+          aiProvider: 'fast-keyword-parser',
+          modelUsed: 'instant-edge-matcher',
+          latencyMs: Date.now() - startTime,
         };
       }
     }
   }
 
-  // If Gemini API is available, invoke Gemini 3.8 Flash for semantic parsing
+  // 1. Check Groq AI Free Tier LPU (https://console.groq.com)
+  if (activeGroqApiKey) {
+    try {
+      const systemPrompt = `You are an ultra-fast Instagram AI Automation intent parser.
+Available active campaigns:
+${JSON.stringify(
+  targetCampaigns.map((c) => ({
+    id: c.id,
+    name: c.name,
+    keywords: c.keywords,
+    condition: c.condition,
+    captionSnippet: c.mediaDetails?.caption?.substring(0, 80) || '',
+  })),
+  null,
+  2
+)}
+
+Determine if the user's comment expresses clear or implied intent to receive the offered resource/link (including typos like 'lnik', phrases like 'send me this', 'can i get the repo', 'how much', or foreign languages like 'enlace').
+Respond ONLY with a valid JSON object matching this schema:
+{
+  "matched": boolean,
+  "campaignId": "string or null",
+  "matchedKeyword": "string or null",
+  "confidence": number,
+  "detectedIntent": "string",
+  "reasoning": "string",
+  "suggestedReply": "string"
+}`;
+
+      const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${activeGroqApiKey}`,
+        },
+        body: JSON.stringify({
+          model: preferredGroqModel,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: `Comment: "${commentText}"` },
+          ],
+          response_format: { type: 'json_object' },
+          temperature: 0.1,
+          max_tokens: 300,
+        }),
+      });
+
+      if (groqRes.ok) {
+        const groqData = await groqRes.json();
+        const content = groqData.choices?.[0]?.message?.content;
+        if (content) {
+          const parsed = JSON.parse(content);
+          if (parsed && typeof parsed.matched === 'boolean') {
+            return {
+              ...parsed,
+              aiProvider: 'groq-lpu-cloud',
+              modelUsed: preferredGroqModel,
+              latencyMs: Date.now() - startTime,
+            };
+          }
+        }
+      } else {
+        const errText = await groqRes.text();
+        console.warn('Groq API returned error:', groqRes.status, errText);
+      }
+    } catch (err) {
+      console.warn('Groq classification fallback:', err);
+    }
+  }
+
+  // 2. Cascade to Gemini 3.8 Flash if available
   if (apiKey) {
     try {
       const prompt = `You are a real-time Instagram AI Automation intent parser.
@@ -560,14 +640,19 @@ Return ONLY a valid JSON object matching this schema:
       const responseText = response.text?.trim() || '{}';
       const parsed = JSON.parse(responseText);
       if (parsed && typeof parsed.matched === 'boolean') {
-        return parsed;
+        return {
+          ...parsed,
+          aiProvider: 'gemini-flash',
+          modelUsed: 'gemini-3.8-flash',
+          latencyMs: Date.now() - startTime,
+        };
       }
     } catch (err) {
       console.warn('Gemini classification fallback to semantic heuristics:', err);
     }
   }
 
-  // Fast offline / heuristic fallback with typo tolerance
+  // 3. Fast offline / heuristic fallback with typo tolerance
   const typosAndSynonyms: Record<string, string[]> = {
     BLUEPRINT: ['blueprint', 'blue print', 'bluprint', 'repo', 'source', 'code', 'github', 'send it', 'can i get the code', 'enlace', 'send blueprint'],
     SAVE: ['save', 'discount', 'saving', 'calculator', 'cost', 'sheet', 'spreadsheet', 'calc', 'how much'],
@@ -590,6 +675,9 @@ Return ONLY a valid JSON object matching this schema:
             detectedIntent: `SEMANTIC_MATCH_${upperKw}`,
             reasoning: `Semantic engine matched phrase "${phrase}" to campaign keyword "${kw}" via intent parser.`,
             suggestedReply: `Detected intent for ${kw}! Sending custom payload to DMs.`,
+            aiProvider: 'edge-semantic-engine',
+            modelUsed: 'typo-tolerant-fast-parser',
+            latencyMs: Date.now() - startTime,
           };
         }
       }
@@ -602,6 +690,9 @@ Return ONLY a valid JSON object matching this schema:
     confidence: 0.15,
     detectedIntent: 'GENERAL_COMMENT_NO_KEYWORD',
     reasoning: 'Comment appears to be general feedback or conversational remark without trigger intent.',
+    aiProvider: 'edge-semantic-engine',
+    modelUsed: 'standard-filter',
+    latencyMs: Date.now() - startTime,
   };
 }
 
@@ -614,11 +705,95 @@ app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
+    groqEnabled: Boolean(activeGroqApiKey),
+    groqModel: preferredGroqModel,
+    groqFreeTier: 'Active (console.groq.com)',
     geminiEnabled: Boolean(apiKey),
     edgeRuntime: 'emulated-vercel-edge',
     dbProvider: 'turso-libsql-multi-tenant',
     inngestEngine: 'active',
   });
+});
+
+// Groq AI Free Tier Status & Configuration
+app.get('/api/groq/status', (_req: Request, res: Response) => {
+  const isKeyConfigured = Boolean(activeGroqApiKey);
+  res.json({
+    configured: isKeyConfigured,
+    maskedKey: isKeyConfigured
+      ? `${activeGroqApiKey.substring(0, 7)}...${activeGroqApiKey.substring(activeGroqApiKey.length - 4)}`
+      : null,
+    model: preferredGroqModel,
+    availableModels: [
+      { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Versatile, Recommended)', speed: 'Fast (120 t/s)' },
+      { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B (Sub-100ms Instant Edge)', speed: 'Ultra-Fast (350+ t/s)' },
+      { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B (Long Context 32k)', speed: 'High Speed' },
+    ],
+    freeTierUrl: 'https://console.groq.com/keys',
+    freeTierDailyLimit: '14,400 requests / day (Free Forever)',
+  });
+});
+
+// Test and save Groq API Key
+app.post('/api/groq/test-key', async (req: Request, res: Response) => {
+  const { apiKey: testKey, model } = req.body;
+  if (!testKey || typeof testKey !== 'string') {
+    return res.status(400).json({ valid: false, error: 'Please provide a valid Groq API key.' });
+  }
+
+  const cleanKey = testKey.trim();
+  const testModel = model || preferredGroqModel || 'llama-3.1-8b-instant';
+  const startTime = Date.now();
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cleanKey}`,
+      },
+      body: JSON.stringify({
+        model: testModel,
+        messages: [{ role: 'user', content: 'Ping! Reply with {"ok": true}' }],
+        response_format: { type: 'json_object' },
+        max_tokens: 20,
+      }),
+    });
+
+    const latencyMs = Date.now() - startTime;
+
+    if (response.ok) {
+      activeGroqApiKey = cleanKey;
+      if (model) preferredGroqModel = model;
+      return res.json({
+        valid: true,
+        model: testModel,
+        latencyMs,
+        message: `Connected to Groq AI Free Tier in ${latencyMs}ms! LPU inference active.`,
+      });
+    } else {
+      const errBody = await response.text();
+      return res.status(400).json({
+        valid: false,
+        error: `Groq verification failed (${response.status}): ${errBody}`,
+      });
+    }
+  } catch (err: any) {
+    return res.status(500).json({
+      valid: false,
+      error: `Network error reaching Groq API: ${err.message || String(err)}`,
+    });
+  }
+});
+
+// Update Groq Preferred Model
+app.post('/api/groq/set-model', (req: Request, res: Response) => {
+  const { model } = req.body;
+  if (model && typeof model === 'string') {
+    preferredGroqModel = model;
+    return res.json({ success: true, model: preferredGroqModel });
+  }
+  res.status(400).json({ error: 'Invalid model name' });
 });
 
 // 1. Meta Webhook Verification (GET /api/webhooks/instagram)
@@ -677,8 +852,8 @@ app.post('/api/webhooks/instagram', async (req: Request, res: Response) => {
     (c) => c.triggerType === 'ANY_POST' || (c.triggerType === 'SPECIFIC_POST' && c.mediaId === mediaId)
   );
 
-  // 3. AI Intent Classification (Groq / Gemini Engine)
-  const classification = await classifyCommentIntentWithGemini(
+  // 3. AI Intent Classification (Groq AI Free Tier / Gemini / Heuristic)
+  const classification = await classifyCommentIntent(
     commentText,
     eligibleCampaigns.length > 0 ? eligibleCampaigns : workspaceCampaigns
   );
@@ -855,10 +1030,9 @@ app.post('/api/agent/classify', async (req: Request, res: Response) => {
   const currentWorkspaceId = workspaceId || db.workspaces[0].id;
   const activeCampaigns = db.campaigns.filter((c) => c.workspaceId === currentWorkspaceId);
 
-  const result = await classifyCommentIntentWithGemini(commentText || '', activeCampaigns);
+  const result = await classifyCommentIntent(commentText || '', activeCampaigns);
   res.json({
     ...result,
-    modelUsed: apiKey ? 'gemini-3.8-flash (via @google/genai)' : 'edge-heuristic-synonym-engine',
   });
 });
 
@@ -878,9 +1052,68 @@ app.post('/api/agent/steer', async (req: Request, res: Response) => {
       replyText: `Thank you! I have confirmed your email (${extractedEmail}) and sent your private access token. Here is your direct link: https://autodm.edge/r/${campaign.id}?u=lead`,
       action: 'LEAD_FULFILLED',
       confidence: 0.99,
+      aiProvider: 'regex-lead-extractor',
     });
   }
 
+  // 1. Try Groq AI Free Tier LPU first if configured
+  if (activeGroqApiKey) {
+    try {
+      const groqSteerPrompt = `You are a friendly, helpful Instagram direct message AI assistant for an automated campaign named "${campaign.name}".
+Goal: The user commented on an Instagram reel/post and we offered an exclusive resource or link. We politely ask for their email address to deliver it.
+User just replied: "${userMessage}"
+Context of previous conversation:
+${JSON.stringify(previousMessages || [])}
+
+Instructions:
+1. If the user asks why we need their email or expresses hesitation, answer politely and concisely in 1-2 friendly sentences (e.g. Meta flags long links in DMs, and we send direct one-click access).
+2. If the user asks a question about the resource or blueprint, answer accurately and politely ask for their email again.
+3. Keep the tone natural, conversational, and native to Instagram DMs.
+
+Output ONLY a JSON object:
+{
+  "replyText": "string",
+  "leadCaptured": null,
+  "action": "OBJECTION_HANDLED",
+  "confidence": 0.95
+}`;
+
+      const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${activeGroqApiKey}`,
+        },
+        body: JSON.stringify({
+          model: preferredGroqModel,
+          messages: [
+            { role: 'system', content: groqSteerPrompt },
+            { role: 'user', content: userMessage },
+          ],
+          response_format: { type: 'json_object' },
+          temperature: 0.3,
+          max_tokens: 250,
+        }),
+      });
+
+      if (groqRes.ok) {
+        const groqData = await groqRes.json();
+        const content = groqData.choices?.[0]?.message?.content;
+        if (content) {
+          const parsed = JSON.parse(content);
+          return res.json({
+            ...parsed,
+            aiProvider: 'groq-lpu-cloud',
+            modelUsed: preferredGroqModel,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('Groq steering fallback:', err);
+    }
+  }
+
+  // 2. Cascade to Gemini 3.8 Flash if available
   if (apiKey) {
     try {
       const prompt = `You are a warm, helpful Instagram direct message AI assistant for an automated campaign named "${campaign.name}".
@@ -912,7 +1145,11 @@ Output JSON:
       });
 
       const parsed = JSON.parse(response.text?.trim() || '{}');
-      return res.json(parsed);
+      return res.json({
+        ...parsed,
+        aiProvider: 'gemini-flash',
+        modelUsed: 'gemini-3.8-flash',
+      });
     } catch (err) {
       console.warn('Gemini steering fallback:', err);
     }
@@ -925,6 +1162,7 @@ Output JSON:
     leadCaptured: null,
     action: 'OBJECTION_HANDLED',
     confidence: 0.88,
+    aiProvider: 'edge-conversational-fallback',
   });
 });
 

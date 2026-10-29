@@ -58,7 +58,8 @@ In the Vercel project configuration panel, add these environment variables:
 
 | Variable | Description | Required For |
 | :--- | :--- | :--- |
-| \`GEMINI_API_KEY\` | Google Gemini API Key | AI Agent Intent Classification & Objections |
+| \`GROQ_API_KEY\` | Groq AI Key (Free from console.groq.com/keys) | Ultra-Fast LPU Intent & Objection Parsing |
+| \`GEMINI_API_KEY\` | Google Gemini API Key (Optional) | Fallback AI Agent Routing |
 | \`APP_URL\` | Your deployed Vercel domain (e.g. \`https://autodm-edge.vercel.app\`) | Meta OAuth & Webhooks |
 | \`META_APP_ID\` | Meta Developer App ID | Production Instagram Graph API |
 | \`META_APP_SECRET\` | Meta Developer App Secret | Production Instagram Graph API |
@@ -81,10 +82,10 @@ Click **Deploy**! Vercel builds the SPA on edge CDN and spins up the serverless 
 [![Vercel Edge](https://img.shields.io/badge/Runtime-Vercel%20Edge%20%28%3C25ms%29-black?logo=vercel)](https://vercel.com)
 [![Inngest Workflows](https://img.shields.io/badge/Workflow-Inngest%20Serverless-00EDBE)](https://inngest.com)
 [![Database](https://img.shields.io/badge/State-Turso%20LibSQL%20SQLite-00E599)](https://turso.tech)
-[![AI Engine](https://img.shields.io/badge/AI%20Agent-Gemini%203.8%20Flash-4285F4)](https://ai.google.dev)
+[![AI Engine](https://img.shields.io/badge/AI%20Agent-Groq%20AI%20Free%20Tier-f55036)](https://console.groq.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-AutoDM Edge is an open-source, production-grade alternative to legacy tools like OpenInstaDM. Instead of requiring continuous 24/7 background worker instances (\`npm run worker\`) and dedicated Redis clusters costing $7–$31+/month, AutoDM Edge runs **100% serverless** on the edge:
+AutoDM Edge is an open-source, production-grade serverless Instagram AI automation platform. Instead of requiring continuous 24/7 background worker instances (\`npm run worker\`) and dedicated Redis clusters costing $7–$31+/month, AutoDM Edge runs **100% serverless** on the edge:
 
 \`\`\`
                     ┌────────────────────────────────────────┐
@@ -103,7 +104,7 @@ AutoDM Edge is an open-source, production-grade alternative to legacy tools like
                            │                           │
                            ▼                           ▼
             ┌─────────────────────────────┐ ┌─────────────────────────────┐
-            │   Turso Database (SQLite)   │ │    Gemini AI Agent Engine   │
+            │   Turso Database (SQLite)   │ │    Groq AI Agent Engine     │
             │   Multi-tenant State Layer  │ │   Intent & Context Routing  │
             └─────────────────────────────┘ └─────────────────────────────┘
 \`\`\`

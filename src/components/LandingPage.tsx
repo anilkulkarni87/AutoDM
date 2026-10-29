@@ -23,6 +23,7 @@ interface LandingPageProps {
   onOpenLogin: () => void;
   onOpenDocs: () => void;
   onOpenSimulator: () => void;
+  onOpenSetupWizard?: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
@@ -30,6 +31,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onOpenLogin,
   onOpenDocs,
   onOpenSimulator,
+  onOpenSetupWizard,
 }) => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
@@ -46,7 +48,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </span>
         </a>
 
-        {/* Zone 2: 4-5 Navigation Links */}
+        {/* Zone 2: Navigation Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
           <a href="#features" className="hover:text-white transition-colors whitespace-nowrap shrink-0">
             Features
@@ -54,31 +56,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <a href="#architecture" className="hover:text-white transition-colors whitespace-nowrap shrink-0">
             Architecture
           </a>
-          <a href="#comparison" className="hover:text-white transition-colors whitespace-nowrap shrink-0">
-            vs. OpenInstaDM
+          <a href="#setup" className="hover:text-white transition-colors whitespace-nowrap shrink-0 text-emerald-400 font-semibold">
+            ⚡ 1-Click Setup
           </a>
           <a href="#pricing" className="hover:text-white transition-colors whitespace-nowrap shrink-0">
             Self-Hosted vs. Cloud
           </a>
           <button
             onClick={onOpenDocs}
-            className="hover:text-white transition-colors whitespace-nowrap shrink-0 text-slate-400 font-medium"
+            className="hover:text-white transition-colors whitespace-nowrap shrink-0 text-slate-400 font-medium cursor-pointer"
           >
             GitHub Docs
           </button>
         </nav>
 
-        {/* Zone 3: 1 Primary Action */}
+        {/* Zone 3: Actions */}
         <div className="flex items-center gap-3 shrink-0">
+          {onOpenSetupWizard && (
+            <button
+              onClick={onOpenSetupWizard}
+              className="hidden lg:inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-800/60 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>1-Click Deploy</span>
+            </button>
+          )}
           <button
             onClick={onOpenLogin}
-            className="hidden sm:inline-flex text-xs font-semibold text-slate-300 hover:text-white px-3 py-1.5 transition-colors whitespace-nowrap"
+            className="hidden sm:inline-flex text-xs font-semibold text-slate-300 hover:text-white px-3 py-1.5 transition-colors whitespace-nowrap cursor-pointer"
           >
             Sign In
           </button>
           <button
             onClick={onEnterApp}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-sm shadow-indigo-600/30 transition-all whitespace-nowrap shrink-0"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-sm shadow-indigo-600/30 transition-all whitespace-nowrap shrink-0 cursor-pointer"
           >
             <span>Launch App Console</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -92,7 +103,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="inline-flex items-center gap-2 text-xs font-mono text-indigo-400 bg-indigo-950/40 border border-indigo-900/60 px-3 py-1 rounded-full">
             <span>⚡ Edge-Native + Inngest Workflows</span>
             <span>·</span>
-            <span className="text-emerald-400">Zero Background Workers</span>
+            <span className="text-emerald-400">Groq AI Free Tier LPU</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight" style={{ textWrap: 'balance' }}>
@@ -100,27 +111,36 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </h1>
 
           <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Replace legacy $31/mo Redis queues and background daemons with a 100% serverless event-driven architecture. Powered by Vercel Edge, Inngest durable step workflows, Turso SQLite, and Gemini AI agent routing.
+            Replace expensive background worker daemons with a 100% serverless event-driven architecture. Powered by Vercel Edge, Inngest durable step workflows, Turso SQLite, and Groq AI Free Tier LPU agent routing.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
+            {onOpenSetupWizard && (
+              <button
+                onClick={onOpenSetupWizard}
+                className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-lg shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+              >
+                <Zap className="w-4 h-4 fill-current" />
+                <span>Non-Tech 1-Click Setup</span>
+              </button>
+            )}
             <button
               onClick={onEnterApp}
-              className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-lg shadow-indigo-600/30 transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
             >
               <span>Explore Live Dashboard</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={onOpenSimulator}
-              className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-lg transition-colors cursor-pointer"
             >
               <Play className="w-3.5 h-3.5 text-pink-400 fill-current" />
               <span>Simulate Webhook</span>
             </button>
             <button
               onClick={onOpenDocs}
-              className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-950 border border-slate-800 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-950 border border-slate-800 rounded-lg transition-colors cursor-pointer"
             >
               <FolderGit2 className="w-3.5 h-3.5 text-indigo-400" />
               <span>GitHub Publishing Guide</span>
@@ -248,17 +268,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
-              <Sparkles className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+              <Zap className="w-4 h-4" />
             </div>
-            <h3 className="text-sm font-bold text-white">Gemini 3.8 Flash AI Agent</h3>
+            <h3 className="text-sm font-bold text-white">Groq AI Free Tier LPU Engine</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Stateless semantic intent parser. Replaces rigid exact keyword matching with contextual understanding, typo recovery, and dynamic objection handling.
+              Ultra-fast LPU inference (sub-100ms) with 14,400 free daily requests. Catches typos, foreign phrasing, and autonomously handles DM objection dialogues without cold starts.
             </p>
           </div>
 
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
-            <div className="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
               <Database className="w-4 h-4" />
             </div>
             <h3 className="text-sm font-bold text-white">Turso Multi-Tenant SQLite</h3>
@@ -269,63 +289,114 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* Comparison Table Section */}
-      <section id="comparison" className="py-16 px-6 max-w-7xl mx-auto w-full border-t border-slate-800/80">
+      {/* Non-Technical 1-Click Self-Host Section */}
+      <section id="setup" className="py-16 px-6 max-w-7xl mx-auto w-full border-t border-slate-800/80">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider flex items-center justify-center gap-1.5">
-            <Flame className="w-3.5 h-3.5" />
-            Architectural Face-Off
+          <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-center gap-1.5">
+            <Zap className="w-3.5 h-3.5" />
+            Zero-Code Deployment
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-1">
-            Why Teams Migrate from OpenInstaDM
+            Self-Host in 3 Minutes Without Touching a Terminal
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-2">
-            Comparing the traditional background worker architecture against AutoDM Edge.
+            Designed for creators, marketers, and agency operators. Deploy 100% free serverless infrastructure in 3 guided visual steps.
           </p>
         </div>
 
-        <div className="overflow-x-auto max-w-4xl mx-auto">
-          <table className="w-full text-left text-xs border border-slate-800 rounded-xl overflow-hidden bg-slate-900">
-            <thead className="bg-slate-950 text-slate-300 border-b border-slate-800">
-              <tr>
-                <th className="py-3.5 px-5 font-bold">Operational Dimension</th>
-                <th className="py-3.5 px-5 font-bold text-red-400">🛠️ OpenInstaDM</th>
-                <th className="py-3.5 px-5 font-bold text-emerald-400">⚡ AutoDM Edge</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/80 text-slate-300">
-              <tr>
-                <td className="py-3 px-5 font-semibold text-white">Hosting Requirements</td>
-                <td className="py-3 px-5 text-slate-400">
-                  Separate Web Node + Background Worker + Native Redis Server
-                </td>
-                <td className="py-3 px-5 text-emerald-300 font-medium">
-                  100% Serverless Vercel Edge + Turso LibSQL Database
-                </td>
-              </tr>
-              <tr>
-                <td className="py-3 px-5 font-semibold text-white">Monthly Hosting Cost</td>
-                <td className="py-3 px-5 text-red-400 font-mono font-semibold">$7 to $31+ / mo</td>
-                <td className="py-3 px-5 text-emerald-400 font-mono font-bold">$0 / mo (Free Tier Safe)</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-5 font-semibold text-white">Response Flexibility</td>
-                <td className="py-3 px-5 text-slate-400">Rigid exact keyword only; fails on typos</td>
-                <td className="py-3 px-5 text-emerald-300 font-medium">Gemini 3.8 Flash semantic intent & objection steering</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-5 font-semibold text-white">Scale Pathway</td>
-                <td className="py-3 px-5 text-slate-400">Requires complete refactor to support multiple clients</td>
-                <td className="py-3 px-5 text-emerald-300 font-medium">Native multi-tenant isolation from day one</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-5 font-semibold text-white">Data Maintenance</td>
-                <td className="py-3 px-5 text-slate-400">Manual table pruning or eventual storage crash</td>
-                <td className="py-3 px-5 text-emerald-300 font-medium">Automated 30-day DailyStats rollups (99.8% savings)</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {/* Step 1 */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-mono font-bold text-sm">
+                1
+              </div>
+              <h3 className="text-base font-bold text-white">1-Click Vercel Deploy</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Click the Vercel deploy button. Vercel automatically clones the repository to your account and spins up the edge webhooks for $0/mo.
+              </p>
+            </div>
+            <a
+              href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgoogle-gemini%2Fautodm-edge"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2 px-3 text-xs font-bold text-white bg-black hover:bg-slate-800 border border-slate-700 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 1155 1000">
+                <path d="m577.3 0 577.4 1000H0z" />
+              </svg>
+              <span>Deploy to Vercel</span>
+              <ExternalLink className="w-3 h-3 text-slate-400" />
+            </a>
+          </div>
+
+          {/* Step 2 */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-mono font-bold text-sm">
+                2
+              </div>
+              <h3 className="text-base font-bold text-white">Free Groq AI Key</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Open Groq Console (console.groq.com/keys) and copy your free key. Enjoy 14,400 free requests per day without any credit card or billing.
+              </p>
+            </div>
+            <a
+              href="https://console.groq.com/keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2 px-3 text-xs font-bold text-amber-300 bg-amber-950/40 hover:bg-amber-900/40 border border-amber-800/60 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              <span>Get Free Groq Key</span>
+              <ExternalLink className="w-3 h-3 text-amber-400" />
+            </a>
+          </div>
+
+          {/* Step 3 */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono font-bold text-sm">
+                3
+              </div>
+              <h3 className="text-base font-bold text-white">Copy-Paste Variables</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Use our visual wizard to generate all configuration lines. Paste them once into Vercel Project Settings and you are live!
+              </p>
+            </div>
+            {onOpenSetupWizard && (
+              <button
+                onClick={onOpenSetupWizard}
+                className="w-full py-2 px-3 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Open Setup Assistant</span>
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Wizard launcher callout banner */}
+        {onOpenSetupWizard && (
+          <div className="mt-8 max-w-4xl mx-auto p-5 bg-gradient-to-r from-emerald-950/30 via-slate-900 to-indigo-950/30 border border-emerald-900/50 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                Want our interactive assistant to walk you through it?
+              </h4>
+              <p className="text-xs text-slate-400">
+                The setup wizard validates your Groq AI key in real time and formats all variables for one-click copy.
+              </p>
+            </div>
+            <button
+              onClick={onOpenSetupWizard}
+              className="px-5 py-2.5 text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2 cursor-pointer"
+            >
+              <Zap className="w-4 h-4 fill-current" />
+              <span>Launch 1-Click Setup Wizard</span>
+            </button>
+          </div>
+        )}
       </section>
 
       {/* Pricing / Self-Hosted Tiers Section */}

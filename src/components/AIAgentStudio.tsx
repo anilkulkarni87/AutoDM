@@ -119,17 +119,21 @@ export const AIAgentStudio: React.FC<AIAgentStudioProps> = ({ campaigns }) => {
 
       {/* Part 1: Intent Parsing & Typo Correction Playground */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
           <div>
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              1. Fallback Handling & Semantic Intent Classifier
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span>1. Fallback Handling & Semantic Intent Classifier</span>
+              <span className="text-[10px] font-mono text-amber-400 bg-amber-950/60 border border-amber-800/60 px-2 py-0.5 rounded">
+                ⚡ Groq AI Free Tier LPU
+              </span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Powered by Gemini 3.8 Flash via @google/genai on Vercel Edge Serverless
+              Powered by Groq LPU (Llama 3.3 70B & Llama 3.1 8B) with 14,400 free requests/day + Gemini & edge heuristics
             </p>
           </div>
-          <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-800/40 px-2 py-0.5 rounded">
-            Agent Status: Online
+          <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-800/40 px-2 py-0.5 rounded flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Groq LPU: Ready
           </span>
         </div>
 
@@ -147,7 +151,7 @@ export const AIAgentStudio: React.FC<AIAgentStudioProps> = ({ campaigns }) => {
             <button
               onClick={() => handleTestComment()}
               disabled={isClassifying}
-              className="px-4 py-2.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/30 whitespace-nowrap"
+              className="px-4 py-2.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/30 whitespace-nowrap cursor-pointer"
             >
               {isClassifying ? (
                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -175,7 +179,7 @@ export const AIAgentStudio: React.FC<AIAgentStudioProps> = ({ campaigns }) => {
                   setTestComment(preset);
                   handleTestComment(preset);
                 }}
-                className="px-2 py-1 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded transition-colors"
+                className="px-2 py-1 bg-slate-950 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 rounded transition-colors cursor-pointer"
               >
                 "{preset}"
               </button>
@@ -186,12 +190,12 @@ export const AIAgentStudio: React.FC<AIAgentStudioProps> = ({ campaigns }) => {
         {/* Evaluation Comparison Result */}
         {classificationResult && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            {/* OpenInstaDM (Keyword Match) */}
+            {/* Rigid Keyword Match Card */}
             <div className="bg-red-950/20 border border-red-900/40 rounded-xl p-4 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-red-400 flex items-center gap-1.5">
                   <ShieldAlert className="w-4 h-4" />
-                  Traditional OpenInstaDM (Keyword Match)
+                  Basic Exact Keyword Match
                 </span>
                 <span className="text-[10px] font-mono text-red-400 bg-red-950/80 px-1.5 py-0.5 rounded">
                   Rigid Logic
@@ -213,10 +217,10 @@ export const AIAgentStudio: React.FC<AIAgentStudioProps> = ({ campaigns }) => {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4" />
-                  Proposed Edge AI Agent Engine
+                  Autonomous AI Agent Engine
                 </span>
                 <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded">
-                  Gemini 3.8 Flash
+                  {classificationResult.modelUsed || 'Groq LPU / Gemini Flash'}
                 </span>
               </div>
 
@@ -231,7 +235,8 @@ export const AIAgentStudio: React.FC<AIAgentStudioProps> = ({ campaigns }) => {
                     {classificationResult.matched ? 'TRIGGERED (Intent Detected)' : 'IGNORED (General Comment)'}
                   </span>
                   <span className="text-slate-500 font-mono text-[11px]">
-                    ({(classificationResult.confidence * 100).toFixed(0)}% confidence)
+                    ({(classificationResult.confidence * 100).toFixed(0)}% confidence
+                    {classificationResult.latencyMs ? ` · ${classificationResult.latencyMs}ms` : ''})
                   </span>
                 </div>
 
