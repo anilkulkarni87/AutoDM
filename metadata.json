@@ -1,0 +1,6 @@
+{
+  "name": "AutoDM Edge - Serverless Instagram AI Automation",
+  "description": "Edge-native multi-tenant Instagram DM automation and AI agent engine powered by Inngest workflows, Turso SQLite, and Gemini AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
