@@ -82,44 +82,46 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       {/* Sub-navigation tabs & export */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white">Analytics & Event Ledger</h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Aggregated time-series ledger in Turso SQLite minimizing database reads with zero Redis overhead.
+          <h2 className="text-xl font-bold tracking-tight text-stone-900 dark:text-white">
+            Instagram Analytics & Event Ledger
+          </h2>
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+            Aggregated time-series ledger in Turso SQLite with real-time conversion stats.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex bg-slate-900 border border-slate-800 rounded-lg p-1">
+          <div className="flex bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-1">
             <button
               onClick={() => setSelectedSubTab('overview')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 selectedSubTab === 'overview'
-                  ? 'bg-slate-800 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-xs font-bold'
+                  : 'text-stone-500 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
               Overview
             </button>
             <button
               onClick={() => setSelectedSubTab('ledger')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
                 selectedSubTab === 'ledger'
-                  ? 'bg-slate-800 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-xs font-bold'
+                  : 'text-stone-500 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
               Raw Ledger ({rawLedger.length})
             </button>
             <button
               onClick={() => setSelectedSubTab('leads')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors flex items-center gap-1 ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1 cursor-pointer ${
                 selectedSubTab === 'leads'
-                  ? 'bg-slate-800 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-xs font-bold'
+                  : 'text-stone-500 hover:text-stone-900 dark:hover:text-stone-200'
               }`}
             >
               <span>Captured Leads</span>
-              <span className="text-[10px] font-mono bg-pink-950/60 text-pink-400 px-1.5 py-0.2 rounded-full">
+              <span className="text-[10px] font-mono bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400 px-1.5 py-0.2 rounded-full font-bold">
                 {leadsCaptured.length}
               </span>
             </button>
@@ -128,7 +130,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           {selectedSubTab === 'leads' && (
             <button
               onClick={exportLeadsCsv}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 rounded-xl shadow-xs transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -140,58 +142,58 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       {/* High-Density KPI Cards (4 KPIs) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Metric 1: Trigger Volume */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
-            <span>Trigger Volume</span>
-            <MessageCircle className="w-4 h-4 text-slate-400" />
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 space-y-2 shadow-xs">
+          <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 font-medium">
+            <span>Reel Comments Triggered</span>
+            <MessageCircle className="w-4 h-4 text-stone-400" />
           </div>
-          <div className="text-2xl font-bold font-mono text-white tabular-nums">
+          <div className="text-2xl font-bold font-mono text-stone-900 dark:text-white tabular-nums">
             {totals.comments}
           </div>
-          <p className="text-[11px] text-slate-400">
-            Raw incoming webhooks matching post triggers
+          <p className="text-[11px] text-stone-500 dark:text-stone-400">
+            Incoming webhooks evaluated by Groq AI
           </p>
         </div>
 
         {/* Metric 2: Delivery Success Rate */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 space-y-2 shadow-xs">
+          <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 font-medium">
             <span>Delivery Success Rate</span>
-            <Send className="w-4 h-4 text-emerald-400" />
+            <Send className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-2xl font-bold font-mono text-emerald-400 tabular-nums">
+          <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
             {rates.deliveryRate}%
           </div>
-          <p className="text-[11px] text-slate-400">
-            {totals.dms} DMs accepted by Meta API Gateway
+          <p className="text-[11px] text-stone-500 dark:text-stone-400">
+            {totals.dms} DMs delivered without rate limit drops
           </p>
         </div>
 
         {/* Metric 3: Link Click-Through Rate */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 space-y-2 shadow-xs">
+          <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 font-medium">
             <span>Link CTR</span>
-            <MousePointerClick className="w-4 h-4 text-indigo-400" />
+            <MousePointerClick className="w-4 h-4 text-purple-500" />
           </div>
-          <div className="text-2xl font-bold font-mono text-indigo-300 tabular-nums">
+          <div className="text-2xl font-bold font-mono text-purple-700 dark:text-purple-400 tabular-nums">
             {rates.clickRate}%
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-stone-500 dark:text-stone-400">
             {totals.clicks} custom tracking link clicks verified
           </p>
         </div>
 
         {/* Metric 4: Lead Generation Rate */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 space-y-2 shadow-xs">
+          <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 font-medium">
             <span>Lead Capture Rate</span>
-            <Users className="w-4 h-4 text-pink-400" />
+            <Users className="w-4 h-4 text-rose-500" />
           </div>
-          <div className="text-2xl font-bold font-mono text-pink-400 tabular-nums">
+          <div className="text-2xl font-bold font-mono text-rose-600 dark:text-rose-400 tabular-nums">
             {rates.leadRate}%
           </div>
-          <p className="text-[11px] text-slate-400">
-            {totals.leads} emails captured via Agentic loop
+          <p className="text-[11px] text-stone-500 dark:text-stone-400">
+            {totals.leads} emails captured in DM conversation
           </p>
         </div>
       </div>
@@ -200,15 +202,15 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
       {selectedSubTab === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Hourly Time-Series Distribution (7 cols) */}
-          <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="lg:col-span-7 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 space-y-4 shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
               <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h3 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wider">
                   Hourly Webhook & Conversion Throughput
                 </h3>
-                <p className="text-[11px] text-slate-400">Past 6 hours rolling ledger count</p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">Past 6 hours rolling ledger count</p>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400">Aggregation: 1 hr</span>
+              <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">1h Windows</span>
             </div>
 
             <div className="space-y-4 pt-2">
@@ -216,16 +218,16 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                 Object.entries(metricsData.hourlyBuckets).map(([hour, val]) => (
                   <div key={hour} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-slate-400">{hour}</span>
-                      <span className="text-slate-200">
+                      <span className="text-stone-500 dark:text-stone-400">{hour}</span>
+                      <span className="text-stone-800 dark:text-stone-200 font-medium">
                         {val.comments} comments · {val.dms} DMs · {val.leads} leads
                       </span>
                     </div>
 
-                    <div className="h-3 w-full bg-slate-950 rounded-full overflow-hidden flex">
+                    <div className="h-3 w-full bg-stone-100 dark:bg-stone-950 rounded-full overflow-hidden flex">
                       <div
                         style={{ width: `${Math.min(val.comments * 0.6, 60)}%` }}
-                        className="bg-indigo-500 h-full"
+                        className="bg-purple-500 h-full"
                         title="Comments Received"
                       />
                       <div
@@ -235,7 +237,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                       />
                       <div
                         style={{ width: `${Math.min(val.leads * 0.3, 20)}%` }}
-                        className="bg-pink-500 h-full"
+                        className="bg-rose-500 h-full"
                         title="Leads Captured"
                       />
                     </div>
@@ -243,29 +245,29 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                 ))}
             </div>
 
-            <div className="flex items-center gap-4 pt-4 border-t border-slate-800 text-[11px] font-mono text-slate-400">
+            <div className="flex items-center gap-4 pt-4 border-t border-stone-100 dark:border-stone-800 text-[11px] font-mono text-stone-500 dark:text-stone-400">
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block" /> Comments Received
+                <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" /> Comments Received
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> DMs Delivered
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-pink-500 inline-block" /> Email Leads
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" /> Email Leads
               </span>
             </div>
           </div>
 
           {/* Recent DM Conversations & Leads (5 cols) */}
-          <div className="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="lg:col-span-5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 space-y-4 shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
               <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                  Live Conversation Threads
+                <h3 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wider">
+                  Live Conversations
                 </h3>
-                <p className="text-[11px] text-slate-400">Recent automated Instagram direct messages</p>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">Recent automated Instagram direct messages</p>
               </div>
-              <span className="text-[10px] font-mono text-indigo-400">Real-time</span>
+              <span className="text-[10px] font-mono text-rose-600 dark:text-rose-400 font-bold">Real-time</span>
             </div>
 
             <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
@@ -273,28 +275,37 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                 <div
                   key={conv.id}
                   onClick={() => onOpenConversation && onOpenConversation(conv)}
-                  className="p-3 bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-xl transition-all cursor-pointer space-y-2"
+                  className="p-3 bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 hover:border-rose-300 dark:hover:border-rose-900/60 rounded-2xl transition-all cursor-pointer space-y-2 shadow-xs"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-[10px] font-bold text-white">
-                        {conv.instagramUser.slice(0, 2).toUpperCase()}
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white">
+                        {conv.instagramUser.slice(0, 1).toUpperCase()}
                       </div>
-                      <span className="text-xs font-bold text-white">@{conv.instagramUser}</span>
+                      <span className="text-xs font-bold text-stone-900 dark:text-white">
+                        @{conv.instagramUser}
+                      </span>
                     </div>
-                    <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" />
-                      <span>{conv.status}</span>
+
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold ${
+                        conv.status === 'SENT'
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400'
+                          : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'
+                      }`}
+                    >
+                      {conv.status}
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-slate-400 line-clamp-1 italic">
-                    "{conv.commentText}"
+                  <p className="text-[11px] text-stone-600 dark:text-stone-300 line-clamp-1 italic">
+                    "{conv.messages[conv.messages.length - 1]?.text || 'No messages'}"
                   </p>
 
                   {conv.collectedLeads?.email && (
-                    <div className="text-[10px] font-mono text-pink-400 bg-pink-950/40 border border-pink-900/40 px-2 py-0.5 rounded flex items-center gap-1">
-                      <span>Lead: {conv.collectedLeads.email}</span>
+                    <div className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 flex items-center gap-1 font-bold">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>Captured: {conv.collectedLeads.email}</span>
                     </div>
                   )}
                 </div>
@@ -304,21 +315,21 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
         </div>
       )}
 
-      {/* Raw Event Ledger Table */}
+      {/* Raw Ledger Table */}
       {selectedSubTab === 'ledger' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 space-y-4 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-slate-400" />
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400">Filter Event:</span>
               <select
                 value={ledgerFilter}
                 onChange={(e) => setLedgerFilter(e.target.value)}
-                className="bg-slate-950 border border-slate-700 text-xs text-white rounded px-2.5 py-1 focus:outline-none"
+                className="bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 text-xs text-stone-800 dark:text-stone-200 rounded-xl px-3 py-1.5 focus:outline-none"
               >
-                <option value="ALL">All Event Types</option>
+                <option value="ALL">All Events</option>
                 <option value="COMMENT_RECEIVED">COMMENT_RECEIVED</option>
                 <option value="DM_SENT">DM_SENT</option>
-                <option value="LINK_CLICK">LINK_CLICK</option>
+                <option value="LINK_CLICKED">LINK_CLICKED</option>
                 <option value="LEAD_CAPTURED">LEAD_CAPTURED</option>
               </select>
             </div>
@@ -326,49 +337,45 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search ledger entries..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                placeholder="Search ledger..."
+                className="bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 text-xs text-stone-800 dark:text-stone-200 rounded-xl pl-8 pr-3 py-1.5 focus:outline-none"
               />
-              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+              <Search className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-2.5" />
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 text-[11px]">
-                <tr>
-                  <th className="py-2.5 px-3">LEDGER ID</th>
-                  <th className="py-2.5 px-3">EVENT TYPE</th>
-                  <th className="py-2.5 px-3">WORKSPACE</th>
-                  <th className="py-2.5 px-3">CAMPAIGN ID</th>
-                  <th className="py-2.5 px-3 text-right">TIMESTAMP</th>
+              <thead>
+                <tr className="border-b border-stone-100 dark:border-stone-800 text-stone-500 dark:text-stone-400 text-[11px]">
+                  <th className="py-2.5 px-3">Timestamp</th>
+                  <th className="py-2.5 px-3">Event Type</th>
+                  <th className="py-2.5 px-3">Campaign ID</th>
+                  <th className="py-2.5 px-3">User Mask</th>
+                  <th className="py-2.5 px-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300 text-[11px]">
-                {filteredLedger.map((row) => (
-                  <tr key={row.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="py-2 px-3 text-slate-400">{row.id}</td>
+              <tbody className="divide-y divide-stone-100 dark:divide-stone-800/60">
+                {filteredLedger.slice(0, 20).map((row) => (
+                  <tr key={row.id} className="hover:bg-stone-50 dark:hover:bg-stone-950/40">
+                    <td className="py-2 px-3 text-stone-500">
+                      {new Date(row.timestamp).toLocaleTimeString()}
+                    </td>
                     <td className="py-2 px-3">
-                      <span
-                        className={`font-semibold ${
-                          row.metricType === 'DM_SENT'
-                            ? 'text-emerald-400'
-                            : row.metricType === 'LINK_CLICK'
-                            ? 'text-indigo-400'
-                            : row.metricType === 'LEAD_CAPTURED'
-                            ? 'text-pink-400'
-                            : 'text-slate-300'
-                        }`}
-                      >
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200">
                         {row.metricType}
                       </span>
                     </td>
-                    <td className="py-2 px-3 text-slate-400">{row.workspaceId}</td>
-                    <td className="py-2 px-3 text-slate-300">{row.campaignId || '—'}</td>
-                    <td className="py-2 px-3 text-right text-slate-400 tabular-nums">
-                      {new Date(row.timestamp).toLocaleTimeString()}
+                    <td className="py-2 px-3 text-stone-600 dark:text-stone-400 truncate max-w-[140px]">
+                      {row.campaignId || 'global'}
+                    </td>
+                    <td className="py-2 px-3 text-stone-700 dark:text-stone-300">
+                      user_***{row.id.slice(-4)}
+                    </td>
+                    <td className="py-2 px-3 text-emerald-600 dark:text-emerald-400 font-bold">
+                      SUCCESS
                     </td>
                   </tr>
                 ))}
@@ -378,42 +385,56 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
         </div>
       )}
 
-      {/* Captured Leads Sub-tab */}
+      {/* Captured Leads Sub-Tab */}
       {selectedSubTab === 'leads' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 space-y-4 shadow-xs">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
             <div>
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                Captured Inbound Leads ({leadsCaptured.length})
+              <h3 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider">
+                Captured Lead Directory
               </h3>
-              <p className="text-[11px] text-slate-400">
-                Verified work emails and contact details extracted autonomously via dynamic Instagram DMs
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                Qualified emails and phone numbers captured through DM objections
               </p>
             </div>
+            <span className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400">
+              {leadsCaptured.length} Verified Contacts
+            </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 text-[11px]">
-                <tr>
-                  <th className="py-2.5 px-3">USER</th>
-                  <th className="py-2.5 px-3">CAPTURED EMAIL</th>
-                  <th className="py-2.5 px-3">ATTRIBUTED CAMPAIGN</th>
-                  <th className="py-2.5 px-3">INITIAL COMMENT TRIGGER</th>
-                  <th className="py-2.5 px-3 text-right">CAPTURED AT</th>
+              <thead>
+                <tr className="border-b border-stone-100 dark:border-stone-800 text-stone-500 dark:text-stone-400 text-[11px]">
+                  <th className="py-2.5 px-3">Instagram Handle</th>
+                  <th className="py-2.5 px-3">Captured Email</th>
+                  <th className="py-2.5 px-3">Source Campaign</th>
+                  <th className="py-2.5 px-3">Date</th>
+                  <th className="py-2.5 px-3">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300 text-[11px]">
+              <tbody className="divide-y divide-stone-100 dark:divide-stone-800/60">
                 {leadsCaptured.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="py-2.5 px-3 font-bold text-white">@{lead.instagramUser}</td>
-                    <td className="py-2.5 px-3 text-pink-400 font-bold">
-                      {lead.collectedLeads?.email || '—'}
+                  <tr key={lead.id} className="hover:bg-stone-50 dark:hover:bg-stone-950/40">
+                    <td className="py-2 px-3 font-bold text-stone-900 dark:text-white">
+                      @{lead.instagramUser}
                     </td>
-                    <td className="py-2.5 px-3 text-indigo-300 truncate max-w-xs">{lead.campaignName}</td>
-                    <td className="py-2.5 px-3 text-slate-400 italic truncate max-w-xs">"{lead.commentText}"</td>
-                    <td className="py-2.5 px-3 text-right text-slate-400 tabular-nums">
-                      {new Date(lead.createdAt).toLocaleDateString()} {new Date(lead.createdAt).toLocaleTimeString()}
+                    <td className="py-2 px-3 text-emerald-600 dark:text-emerald-400 font-bold">
+                      {lead.collectedLeads?.email || 'N/A'}
+                    </td>
+                    <td className="py-2 px-3 text-stone-600 dark:text-stone-400">
+                      {lead.campaignName}
+                    </td>
+                    <td className="py-2 px-3 text-stone-500">
+                      {new Date(lead.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-2 px-3">
+                      <button
+                        onClick={() => onOpenConversation && onOpenConversation(lead)}
+                        className="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+                      >
+                        View DM Thread →
+                      </button>
                     </td>
                   </tr>
                 ))}

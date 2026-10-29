@@ -43,6 +43,7 @@ interface DbState {
   inngestTraces: any[];
   dailyStats: any[];
   purgeHistory: any[];
+  setupOrders: any[];
   systemSettings: {
     editionMode: 'SELF_HOSTED_COMMUNITY' | 'SAAS_PRO_MANAGED';
     lastWarmupAt: string;
@@ -471,6 +472,19 @@ const db: DbState = {
           output: { ledgerRowId: 'm_4', table: 'Metric' },
         },
       ],
+    },
+  ],
+  setupOrders: [
+    {
+      id: 'dfy_9821',
+      email: 'creator_studio@brand.co',
+      instagramHandle: '@creator_studio',
+      preferredContact: 'telegram: @creator_studio',
+      plan: 'DONE_FOR_YOU_SETUP',
+      amount: 20,
+      status: 'SETUP_IN_PROGRESS',
+      createdAt: '2026-10-29T11:00:00Z',
+      notes: 'Configured VPS, Turso SQLite, and verified Meta comments webhook challenge.',
     },
   ],
 };
@@ -1594,6 +1608,33 @@ app.post('/api/system/toggle-edition', (req: Request, res: Response) => {
       ? 'SAAS_PRO_MANAGED'
       : 'SELF_HOSTED_COMMUNITY';
   res.json({ editionMode: db.systemSettings.editionMode });
+});
+
+// 5. Done-For-You Lifetime Setup Orders ($20 One-Time)
+app.get('/api/setup-orders', (_req: Request, res: Response) => {
+  res.json(db.setupOrders || []);
+});
+
+app.post('/api/setup-orders', (req: Request, res: Response) => {
+  const { email, instagramHandle, preferredContact, notes } = req.body;
+  const newOrder = {
+    id: `dfy_${Date.now()}`,
+    email: email || 'user@example.com',
+    instagramHandle: instagramHandle || '@creator',
+    preferredContact: preferredContact || email || 'Email',
+    plan: 'DONE_FOR_YOU_SETUP',
+    amount: 20,
+    status: 'RECEIVED',
+    createdAt: new Date().toISOString(),
+    notes: notes || 'Priority done-for-you Instagram engine setup request.',
+  };
+  if (!db.setupOrders) db.setupOrders = [];
+  db.setupOrders.unshift(newOrder);
+  res.status(201).json({
+    success: true,
+    order: newOrder,
+    message: 'Setup order received! Our devs will configure your Instagram DM engine within 24 hours.',
+  });
 });
 
 // Production Code Templates status endpoint

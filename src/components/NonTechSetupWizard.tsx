@@ -498,11 +498,12 @@ DATABASE_AUTH_TOKEN="your_turso_db_token"
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText('https://your-app.vercel.app/api/webhooks/instagram');
-                      alert('Webhook URL copied!');
+                      setCopiedEnv(true);
+                      setTimeout(() => setCopiedEnv(false), 2500);
                     }}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded border border-slate-700"
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded border border-slate-700 cursor-pointer"
                   >
-                    Copy URL
+                    {copiedEnv ? 'Copied!' : 'Copy URL'}
                   </button>
                 </div>
               </div>

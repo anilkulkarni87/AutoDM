@@ -13,6 +13,19 @@
   }
 }
 
+/* Instagram sunset gradient utilities */
+.instagram-gradient {
+  background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF);
+}
+
+.instagram-gradient-warm {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FF5252 100%);
+}
+
+.instagram-ring {
+  background: linear-gradient(45deg, #F58529, #FEDA77, #DD2A7B, #8134AF, #515BD4);
+}
+
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -22,9 +35,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(168, 162, 158, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
+  background: rgba(168, 162, 158, 0.5);
 }
