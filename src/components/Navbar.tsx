@@ -45,51 +45,43 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleTheme,
 }) => {
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between gap-4 px-4 sm:px-6 py-2.5 bg-white/90 dark:bg-[#121115]/90 backdrop-blur-md border-b border-stone-200/90 dark:border-stone-800/80 transition-colors duration-200">
+    <header className="sticky top-0 z-40 flex items-center justify-between gap-4 px-4 sm:px-8 py-3 bg-[#FAF7F2]/90 dark:bg-[#151413]/90 backdrop-blur-md border-b border-[#E9E4DC] dark:border-stone-800/80 transition-colors duration-200">
       {/* Zone 1: Brand Wordmark + Mode Switcher */}
       <div className="flex items-center gap-3.5 shrink-0">
         <button
           onClick={onOpenLanding}
-          className="flex items-center gap-2.5 text-base font-bold tracking-tight text-stone-900 dark:text-white whitespace-nowrap hover:opacity-95 transition-opacity cursor-pointer text-left"
+          className="flex items-center gap-2.5 text-base font-bold tracking-tight text-stone-900 dark:text-white whitespace-nowrap hover:opacity-90 transition-opacity cursor-pointer text-left"
         >
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] flex items-center justify-center shadow-md shadow-rose-500/25 text-white font-mono text-sm font-black">
-            ⚡
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold tracking-tight text-stone-900 dark:text-stone-100">AutoDM</span>
-              <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60 px-1.5 py-0.2 rounded-md font-mono">
-                INSTAGRAM
-              </span>
-            </div>
-            <span className="text-[10px] font-normal text-stone-500 dark:text-stone-400 hidden sm:block">
-              Groq AI · Free Tier
-            </span>
-          </div>
+          <span className="font-serif text-2xl font-normal text-[#1E1C1A] dark:text-[#F4F1EA]">
+            Ahoy
+          </span>
+          <span className="text-[10px] font-semibold text-[#1B382B] dark:text-emerald-400 bg-[#E2EFE7] dark:bg-emerald-950/60 border border-[#C5DEC9] dark:border-emerald-800/60 px-1.5 py-0.5 rounded-full font-mono">
+            AutoDM
+          </span>
         </button>
 
         {/* View Switcher: Landing vs Console */}
-        <div className="hidden lg:flex items-center bg-stone-100 dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 p-0.5 rounded-lg text-xs">
+        <div className="hidden lg:flex items-center bg-[#EFECE6] dark:bg-stone-900/90 border border-[#E9E4DC] dark:border-stone-800 p-0.5 rounded-full text-xs">
           <button
             onClick={() => setViewMode('landing')}
-            className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer font-medium ${
+            className={`px-3 py-1 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer font-medium ${
               viewMode === 'landing'
-                ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-xs font-semibold'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+                ? 'bg-white dark:bg-stone-800 text-[#1E1C1A] dark:text-white shadow-xs font-semibold'
+                : 'text-[#6B655B] dark:text-stone-400 hover:text-black dark:hover:text-stone-200'
             }`}
           >
-            <Globe className="w-3.5 h-3.5 text-rose-500" />
+            <Globe className="w-3.5 h-3.5 text-emerald-600" />
             <span>Overview</span>
           </button>
           <button
             onClick={() => setViewMode('app')}
-            className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1.5 cursor-pointer font-medium ${
+            className={`px-3 py-1 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer font-medium ${
               viewMode === 'app'
-                ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-xs font-semibold'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
+                ? 'bg-white dark:bg-stone-800 text-[#1E1C1A] dark:text-white shadow-xs font-semibold'
+                : 'text-[#6B655B] dark:text-stone-400 hover:text-black dark:hover:text-stone-200'
             }`}
           >
-            <LayoutDashboard className="w-3.5 h-3.5 text-purple-500" />
+            <LayoutDashboard className="w-3.5 h-3.5 text-[#1B382B] dark:text-emerald-400" />
             <span>App Console</span>
           </button>
         </div>
@@ -164,39 +156,31 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </nav>
       ) : (
-        <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-stone-600 dark:text-stone-400">
+        <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-[#5A554D] dark:text-stone-400">
           <a
-            href="#features"
-            className="hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer"
+            href="#how-it-works"
+            className="hover:text-[#1E1C1A] dark:hover:text-white transition-colors cursor-pointer"
           >
-            Creator Features
-          </a>
-          <a
-            href="#architecture"
-            className="hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer"
-          >
-            Serverless Architecture
-          </a>
-          <a
-            href="#setup"
-            className="hover:text-stone-900 dark:hover:text-white transition-colors text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 cursor-pointer"
-          >
-            <Zap className="w-3 h-3 fill-current" />
-            <span>1-Click Deploy</span>
+            How it works
           </a>
           <a
             href="#pricing"
-            className="hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer"
+            className="hover:text-[#1E1C1A] dark:hover:text-white transition-colors cursor-pointer"
           >
-            Self-Hosted vs Cloud
+            Pricing
           </a>
           <a
-            href="https://github.com"
+            href="#questions"
+            className="hover:text-[#1E1C1A] dark:hover:text-white transition-colors cursor-pointer"
+          >
+            Questions
+          </a>
+          <a
+            href="https://github.com/anil77k/autodm-edge"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-stone-900 dark:hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
+            className="hover:text-[#1E1C1A] dark:hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
           >
-            <FolderGit2 className="w-3.5 h-3.5 text-stone-500" />
             <span>GitHub</span>
             <ExternalLink className="w-2.5 h-2.5 text-stone-400" />
           </a>

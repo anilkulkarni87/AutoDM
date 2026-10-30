@@ -246,7 +246,7 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen bg-[#FAF8F5] text-stone-900 dark:bg-[#121115] dark:text-stone-100 flex flex-col font-sans selection:bg-rose-500 selection:text-white transition-colors duration-200 ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`min-h-screen bg-[#FAF7F2] text-[#1E1C1A] dark:bg-[#151413] dark:text-[#F4F1EA] flex flex-col font-sans selection:bg-[#1B382B] selection:text-white transition-colors duration-200 ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}

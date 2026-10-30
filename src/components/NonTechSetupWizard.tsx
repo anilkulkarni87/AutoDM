@@ -31,6 +31,14 @@ export const NonTechSetupWizard: React.FC<NonTechSetupWizardProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
+  // GitHub repository to deploy (defaults to user's linked repo)
+  const [githubRepoUrl, setGithubRepoUrl] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('autodm_github_repo') || 'https://github.com/anil77k/autodm-edge';
+    }
+    return 'https://github.com/anil77k/autodm-edge';
+  });
+
   // Form states
   const [groqKey, setGroqKey] = useState('');
   const [groqModel, setGroqModel] = useState('llama-3.3-70b-versatile');
@@ -48,6 +56,14 @@ export const NonTechSetupWizard: React.FC<NonTechSetupWizardProps> = ({
   const [useSimulationMode, setUseSimulationMode] = useState(false);
 
   const [copiedEnv, setCopiedEnv] = useState(false);
+
+  // Update localStorage when repo URL changes
+  const handleUpdateRepoUrl = (newUrl: string) => {
+    setGithubRepoUrl(newUrl);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('autodm_github_repo', newUrl);
+    }
+  };
 
   // Fetch current groq status on open
   useEffect(() => {
@@ -201,42 +217,118 @@ DATABASE_AUTH_TOKEN="your_turso_db_token"
           {/* STEP 1: Vercel Deploy */}
           {currentStep === 1 && (
             <div className="space-y-5">
-              <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <Server className="w-4 h-4 text-indigo-400" />
-                    Step 1: One-Click Deploy to Vercel
+                    <span>Step 1: Deploy YOUR Linked GitHub Repository to Vercel</span>
                   </h3>
                   <span className="text-[11px] font-mono text-emerald-400">$0 / month forever</span>
                 </div>
+
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Vercel hosts the entire web application and serverless edge webhook handlers. You don't need to install Node.js, rent a VPS, or run any terminal commands.
+                  Vercel runs your Instagram automation engine completely serverless. Vercel will build directly from <strong>your linked GitHub repository</strong>, ensuring all your custom code and changes are deployed.
                 </p>
 
-                <div className="pt-2">
-                  <a
-                    href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgoogle-gemini%2Fautodm-edge"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-3 text-xs font-bold text-white bg-black hover:bg-slate-800 border border-slate-700 rounded-xl shadow-lg shadow-black/50 transition-all hover:scale-[1.01]"
-                  >
-                    <svg className="w-4 h-4 fill-white" viewBox="0 0 1155 1000">
-                      <path d="m577.3 0 577.4 1000H0z" />
-                    </svg>
-                    <span>Click Here to Deploy with Vercel</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 ml-1" />
-                  </a>
+                {/* Linked Repository Input Box */}
+                <div className="p-3.5 bg-slate-900/90 rounded-xl border border-indigo-500/30 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <label className="font-semibold text-slate-200 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse" />
+                      <span>Your Linked GitHub Repository:</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-indigo-400 font-bold">Connected</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="url"
+                      value={githubRepoUrl}
+                      onChange={(e) => handleUpdateRepoUrl(e.target.value)}
+                      placeholder="https://github.com/your-username/your-repo"
+                      className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateRepoUrl('https://github.com/anil77k/autodm-edge')}
+                      className="px-2.5 py-2 text-[11px] font-medium text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors whitespace-nowrap cursor-pointer"
+                      title="Reset to default linked repository"
+                    >
+                      Reset Default
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-slate-400">
+                    Your Vercel deployment buttons below are dynamically bound to this exact repository.
+                  </p>
+                </div>
+
+                {/* 2 Deployment Options */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  {/* Option 1: Import Existing Linked Repo */}
+                  <div className="p-3.5 bg-slate-900 border border-slate-700 rounded-xl space-y-2 flex flex-col justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white">Option A: Import Linked Repo</span>
+                        <span className="text-[9px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-1.5 py-0.5 rounded">
+                          Recommended
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300">
+                        If this repository already exists on your GitHub, click to import directly into Vercel.
+                      </p>
+                    </div>
+
+                    <a
+                      href={`https://vercel.com/new/import?s=${encodeURIComponent(githubRepoUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-md shadow-indigo-600/30 transition-all text-center"
+                    >
+                      <svg className="w-3.5 h-3.5 fill-white shrink-0" viewBox="0 0 1155 1000">
+                        <path d="m577.3 0 577.4 1000H0z" />
+                      </svg>
+                      <span>Import on Vercel</span>
+                      <ExternalLink className="w-3 h-3 text-indigo-200" />
+                    </a>
+                  </div>
+
+                  {/* Option 2: Clone from Your Repo */}
+                  <div className="p-3.5 bg-slate-900 border border-slate-700 rounded-xl space-y-2 flex flex-col justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-white">Option B: 1-Click Deploy Button</span>
+                        <span className="text-[9px] font-mono text-emerald-400 font-bold">1-Click</span>
+                      </div>
+                      <p className="text-[11px] text-slate-300">
+                        Clones <em>your repository</em> into a new Vercel project automatically.
+                      </p>
+                    </div>
+
+                    <a
+                      href={`https://vercel.com/new/clone?repository-url=${encodeURIComponent(githubRepoUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold text-white bg-black hover:bg-slate-800 border border-slate-600 rounded-lg shadow-md transition-all text-center"
+                    >
+                      <svg className="w-3.5 h-3.5 fill-white shrink-0" viewBox="0 0 1155 1000">
+                        <path d="m577.3 0 577.4 1000H0z" />
+                      </svg>
+                      <span>Deploy from Your Repo</span>
+                      <ExternalLink className="w-3 h-3 text-slate-400" />
+                    </a>
+                  </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800/80 space-y-1">
-                  <span className="text-[10px] font-mono text-indigo-400 uppercase font-bold">1. Sign In</span>
-                  <p className="text-slate-300 text-[11px]">Log in with your existing GitHub or email on Vercel.</p>
+                  <span className="text-[10px] font-mono text-indigo-400 uppercase font-bold">1. Your Own Repo</span>
+                  <p className="text-slate-300 text-[11px]">Deploys directly from your personal GitHub, preserving your code.</p>
                 </div>
                 <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800/80 space-y-1">
-                  <span className="text-[10px] font-mono text-indigo-400 uppercase font-bold">2. Click Create</span>
-                  <p className="text-slate-300 text-[11px]">Vercel clones the repo to your account automatically.</p>
+                  <span className="text-[10px] font-mono text-indigo-400 uppercase font-bold">2. Continuous Sync</span>
+                  <p className="text-slate-300 text-[11px]">Every git push to your repo will auto-deploy to Vercel instantly.</p>
                 </div>
                 <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800/80 space-y-1">
                   <span className="text-[10px] font-mono text-indigo-400 uppercase font-bold">3. Zero Servers</span>

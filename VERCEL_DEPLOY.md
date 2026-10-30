@@ -17,7 +17,7 @@ git init
 git add .
 git commit -m "feat: AutoDM Edge Serverless Instagram automation"
 git branch -M main
-git remote add origin https://github.com/<your-username>/autodm-edge.git
+git remote add origin https://github.com/anil77k/autodm-edge.git
 git push -u origin main
 ```
 

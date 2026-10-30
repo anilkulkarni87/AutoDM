@@ -16,7 +16,7 @@
     },
     {
       "path": "/api/cron/warmup",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
