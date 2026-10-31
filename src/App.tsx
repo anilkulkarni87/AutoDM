@@ -366,7 +366,7 @@ export default function App() {
                   Instagram Mobile Preview
                 </button>
                 <a
-                  href="https://github.com/anil77k/autodm-edge"
+                  href="https://github.com/anilkulkarni87/AutoDM"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors inline-flex items-center gap-1 cursor-pointer"

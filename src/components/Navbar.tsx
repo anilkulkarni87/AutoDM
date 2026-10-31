@@ -162,7 +162,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             Questions
           </a>
           <a
-            href="https://github.com/anil77k/autodm-edge"
+            href="https://github.com/anilkulkarni87/AutoDM"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[#1E1C1A] dark:hover:text-white transition-colors flex items-center gap-1 cursor-pointer"

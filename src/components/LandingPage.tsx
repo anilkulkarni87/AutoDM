@@ -481,7 +481,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           <div className="flex items-center gap-5 font-medium text-[#4A453E] dark:text-stone-300">
             <a
-              href="https://github.com/anil77k/autodm-edge/blob/main/docs/CAMPAIGNS_AND_WORKFLOWS.md"
+              href="https://github.com/anilkulkarni87/AutoDM/blob/main/docs/CAMPAIGNS_AND_WORKFLOWS.md"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-black dark:hover:text-white transition-colors"
@@ -489,7 +489,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               Docs
             </a>
             <a
-              href="https://github.com/anil77k/autodm-edge"
+              href="https://github.com/anilkulkarni87/AutoDM"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-black dark:hover:text-white transition-colors flex items-center gap-1"

@@ -53,7 +53,7 @@ Before you begin, ensure you have:
 
 Deploy your own complete, private instance directly to Vercel:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fanil77k%2Fautodm-edge)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fanilkulkarni87%2FAutoDM)
 
 During deployment, Vercel will ask for environment variables. Follow the 5-minute setup guide below to get your free keys.
 
@@ -204,8 +204,8 @@ Want to test or customize code on your laptop first?
 
 ### 1. Clone & Install Dependencies
 ```bash
-git clone https://github.com/anil77k/autodm-edge.git
-cd autodm-edge
+git clone https://github.com/anilkulkarni87/AutoDM.git
+cd AutoDM
 npm install
 ```
 

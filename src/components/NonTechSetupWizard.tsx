@@ -34,9 +34,9 @@ export const NonTechSetupWizard: React.FC<NonTechSetupWizardProps> = ({
   // GitHub repository to deploy (defaults to user's linked repo)
   const [githubRepoUrl, setGithubRepoUrl] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('autodm_github_repo') || 'https://github.com/anil77k/autodm-edge';
+      return localStorage.getItem('autodm_github_repo') || 'https://github.com/anilkulkarni87/AutoDM';
     }
-    return 'https://github.com/anil77k/autodm-edge';
+    return 'https://github.com/anilkulkarni87/AutoDM';
   });
 
   // Form states
@@ -250,7 +250,7 @@ DATABASE_AUTH_TOKEN="your_turso_db_token"
                     />
                     <button
                       type="button"
-                      onClick={() => handleUpdateRepoUrl('https://github.com/anil77k/autodm-edge')}
+                      onClick={() => handleUpdateRepoUrl('https://github.com/anilkulkarni87/AutoDM')}
                       className="px-2.5 py-2 text-[11px] font-medium text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors whitespace-nowrap cursor-pointer"
                       title="Reset to default linked repository"
                     >
