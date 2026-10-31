@@ -765,6 +765,49 @@ Return ONLY a valid JSON object matching this schema:
 // API Routes
 // ==========================================
 
+// Admin Authentication (Password-protected for self-hosted instances)
+const configuredAdminPassword = process.env.ADMIN_PASSWORD;
+
+app.post('/api/auth/login', (req: Request, res: Response) => {
+  const { password, email } = req.body;
+
+  if (!configuredAdminPassword) {
+    return res.status(500).json({
+      success: false,
+      error: 'ADMIN_PASSWORD is not set in your environment variables. Please add ADMIN_PASSWORD to your .env or Vercel settings to secure your Admin Console.',
+    });
+  }
+
+  if (!password || typeof password !== 'string' || !password.trim()) {
+    return res.status(400).json({
+      success: false,
+      error: 'Password is required to access the Admin Console.',
+    });
+  }
+
+  // Verify against ADMIN_PASSWORD env variable
+  if (password.trim() !== configuredAdminPassword.trim()) {
+    return res.status(401).json({
+      success: false,
+      error: 'Incorrect admin password. Please enter the exact password configured in your ADMIN_PASSWORD environment variable.',
+    });
+  }
+
+  const cleanEmail = email && typeof email === 'string' && email.trim() ? email.trim() : 'admin@selfhosted.local';
+  const name = cleanEmail.includes('@') ? cleanEmail.split('@')[0] : 'Admin';
+  const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+
+  return res.json({
+    success: true,
+    user: {
+      email: cleanEmail,
+      name: capitalizedName,
+      avatarUrl: `https://api.dicebear.com/7.x/identicon/svg?seed=${cleanEmail}`,
+      role: 'Instance Owner',
+    },
+  });
+});
+
 // Health check
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({

@@ -481,7 +481,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           <div className="flex items-center gap-5 font-medium text-[#4A453E] dark:text-stone-300">
             <a
-              href="https://github.com/anil77k/autodm-edge#readme"
+              href="https://github.com/anil77k/autodm-edge/blob/main/docs/CAMPAIGNS_AND_WORKFLOWS.md"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-black dark:hover:text-white transition-colors"
@@ -497,13 +497,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <span>GitHub</span>
               <ExternalLink className="w-2.5 h-2.5 text-stone-400" />
             </a>
-            <span className="text-stone-300 dark:text-stone-700">·</span>
-            <button
-              onClick={onEnterApp}
-              className="hover:text-black dark:hover:text-white font-semibold transition-colors cursor-pointer"
-            >
-              App Console →
-            </button>
           </div>
         </div>
       </footer>

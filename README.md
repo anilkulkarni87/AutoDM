@@ -23,11 +23,15 @@
    - [Step 3: Get Free Groq AI Key (Fast Intent Parsing)](#step-3-get-free-groq-ai-key)
    - [Step 4: Set Up Free Meta Developer App](#step-4-set-up-free-meta-developer-app)
    - [Step 5: Connect Meta Webhook](#step-5-connect-meta-webhook)
-4. [Local Development (Test on your laptop)](#-local-development)
-5. [Built-in Verification & Testing Tools](#-testing-your-automations)
-6. [Novel Features Included](#-novel-creator-features)
-7. [Troubleshooting & Common Questions](#-troubleshooting)
-8. [License](#-license)
+   - [Step 6: Secure Your Admin Console (`ADMIN_PASSWORD`)](#step-6-secure-your-admin-console)
+   - [Step 7: Cron Protection (`CRON_SECRET`) & Public Domain (`APP_URL`)](#step-7-cron-protection--public-domain)
+4. [Complete Secrets & Environment Variables Reference](#-complete-secrets--environment-variables-reference)
+5. [Creating Campaigns & Workflow Steps](#-creating-campaigns--workflow-steps)
+6. [Local Development (Test on your laptop)](#-local-development)
+7. [Built-in Verification & Testing Tools](#-testing-your-automations)
+8. [Novel Features Included](#-novel-creator-features)
+9. [Troubleshooting & Common Questions](#-troubleshooting)
+10. [License](#-license)
 
 ---
 
@@ -131,6 +135,69 @@ Once your Vercel deployment is live (e.g. `https://your-app.vercel.app`):
 
 ---
 
+### Step 6: Secure Your Admin Console
+To prevent public visitors from accessing your dashboard, modifying campaigns, or reading lead lists:
+* Set `ADMIN_PASSWORD="your_secure_password"` in your Vercel project environment variables (or in your local `.env`).
+
+---
+
+### Step 7: Cron Protection & Public Domain
+* **`CRON_SECRET`**:
+  * **What it does**: Vercel Cron jobs send an `Authorization: Bearer <CRON_SECRET>` header with each automated run. Setting this prevents unauthorized visitors from triggering your database purge endpoint (`/api/cron/purge`).
+  * **How to create**: Generate any random 24–32 character string (e.g. run `openssl rand -hex 24` in your terminal, or create a random secret token).
+* **`APP_URL`**:
+  * **What it does**: Used as the base URL for Instagram link redirects (`/r/:campaignId`), true-human click attribution, and OAuth callbacks.
+  * **How to set**: Set to your production Vercel URL (e.g. `https://your-domain.vercel.app`), or `http://localhost:3000` for local testing.
+
+---
+
+## 🔑 Complete Secrets & Environment Variables Reference
+
+Here is the quick-reference checklist of all environment variables supported by Ahoy:
+
+| Variable Name | Required? | Purpose | Where to Get / How to Create | Example Value |
+| :--- | :---: | :--- | :--- | :--- |
+| `DATABASE_URL` | **Yes** | Turso serverless SQLite database endpoint | [turso.tech](https://turso.tech) → Database Overview | `libsql://autodm-db-yourname.turso.io` |
+| `DATABASE_AUTH_TOKEN` | **Yes** | Turso authentication token | [turso.tech](https://turso.tech) → Generate Token | `eyJhbGciOi...` |
+| `INNGEST_EVENT_KEY` | **Yes** | Triggers serverless workflow steps | [inngest.com](https://inngest.com) → Manage → API Keys | `ink_prod_...` |
+| `INNGEST_SIGNING_KEY` | **Yes** | Verifies incoming Inngest webhooks | [inngest.com](https://inngest.com) → Manage → API Keys | `signkey-prod-...` |
+| `GROQ_API_KEY` | **Yes** | Sub-30ms AI intent parsing & typo tolerance | [console.groq.com/keys](https://console.groq.com/keys) (Free Tier, no CC) | `gsk_abc123...` |
+| `GROQ_MODEL` | No | LPU model name for intent parser | Set to `llama-3.3-70b-versatile` (default) | `llama-3.3-70b-versatile` |
+| `META_APP_ID` | **Yes** | Meta Developer App ID | [developers.facebook.com](https://developers.facebook.com) → Settings > Basic | `178414053092...` |
+| `META_APP_SECRET` | **Yes** | Meta App secret key for webhook HMAC verification | [developers.facebook.com](https://developers.facebook.com) → Settings > Basic | `a1b2c3d4e5f6...` |
+| `META_VERIFY_TOKEN` | **Yes** | Handshake secret for Instagram webhook setup | Create any random passphrase you choose | `autodm_verify_secret_2026` |
+| `APP_URL` | **Yes** | Public domain for OAuth and link redirects | Your Vercel domain or custom domain | `https://your-app.vercel.app` |
+| `ADMIN_PASSWORD` | **Yes** | Password to protect your private Admin Console | Choose your own password in `.env` / Vercel settings | `MySecureAdminPass123!` |
+| `CRON_SECRET` | Recommended | Secures nightly `/api/cron/purge` runs | Generate via `openssl rand -hex 24` or random passphrase | `4f8a9e2b1c7d...` |
+| `GEMINI_API_KEY` | Optional | Automatic backup AI provider | [aistudio.google.com](https://aistudio.google.com) | `AIzaSy...` |
+
+---
+
+## 📐 Creating Campaigns & Workflow Steps
+
+Ahoy allows creators to design multi-step, serverless automation funnels with AI intent evaluation, durable follower gates, and true-human link attribution.
+
+👉 **[Read the Complete Campaigns & Workflow Steps Guide →](docs/CAMPAIGNS_AND_WORKFLOWS.md)**
+
+### Campaign Anatomy:
+1. **Trigger Target**:
+   * **Specific Post / Reel**: Attaches only to selected media.
+   * **Any Post / Reel**: Evergreen triggers across all content.
+   * **Story Reply**: Direct engagement from temporary stories.
+2. **Matching Rule**:
+   * **`EXACT_MATCH`**: Strict keyword check (e.g. `BLUEPRINT`).
+   * **`CONTAINS_KEYWORD`**: Matches keyword within sentences.
+   * **`AI_ROUTING`**: Uses Groq AI (<30ms) to resolve typos (*"lnik pls"*) and natural conversation without charging per comment.
+3. **The 6 Modular Workflow Steps**:
+   * **`WAIT_FOR_FOLLOW`**: Pauses up to 5 min and verifies if the commenter follows your profile (with gentle fallback reminders).
+   * **`DELAY_JITTER`**: Injects an organic 30–90s randomized delay to mimic natural human typing and protect account health.
+   * **`PUBLIC_REPLY`**: Posts an official comment reply (e.g. *"Sent! Check your DMs 🚀"*), doubling comments to boost reach in the algorithm.
+   * **`ASK_FOR_LEAD`**: Interactively requests their work email in DMs and records it directly to your lead directory.
+   * **`AI_QUALIFY`**: Leverages Groq LPU / Gemini to answer commenter questions and handle objections warmly.
+   * **`SEND_PRIVATE_DM`**: Delivers the tracked link or download code directly to their direct messages.
+
+---
+
 ## 💻 Local Development
 
 Want to test or customize code on your laptop first?
@@ -152,7 +219,7 @@ Open `.env` and paste your keys from above.
 ```bash
 npm run dev
 ```
-Open **`http://localhost:3000`** in your browser. You will see the landing page and can click **App Console** in the top navigation to view campaigns, AI agent sandbox, traces, and metrics.
+Open **`http://localhost:3000`** in your browser. You will see the landing page; click **Log In** in the top navigation and enter the `ADMIN_PASSWORD` you set in your `.env` to open the Admin Console to view campaigns, AI agent sandbox, traces, and metrics.
 
 ---
 
