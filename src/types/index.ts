@@ -43,6 +43,8 @@ export interface Workspace {
   encryptedTokenMasked: string;
   isTokenActive: boolean;
   campaignsCount: number;
+  isRealAccount?: boolean;
+  followersCount?: number;
 }
 
 export interface PostMedia {

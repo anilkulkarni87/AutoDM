@@ -11,6 +11,7 @@ import { SelfHostManager } from './components/SelfHostManager';
 import { LandingPage } from './components/LandingPage';
 import { AuthModal } from './components/AuthModal';
 import { NonTechSetupWizard } from './components/NonTechSetupWizard';
+import { ConnectInstagramModal } from './components/ConnectInstagramModal';
 import {
   Organization,
   Workspace,
@@ -40,6 +41,7 @@ export default function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showPhonePreview, setShowPhonePreview] = useState(false);
   const [showSetupWizard, setShowSetupWizard] = useState(false);
+  const [showConnectInstagram, setShowConnectInstagram] = useState(false);
   const [selectedPreviewCampaign, setSelectedPreviewCampaign] = useState<Campaign | undefined>(undefined);
 
   // Authentication state
@@ -261,6 +263,8 @@ export default function App() {
         onOpenLanding={() => setViewMode('landing')}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenSetupWizard={() => setShowSetupWizard(true)}
+        onOpenConnectInstagram={() => setShowConnectInstagram(true)}
+        activeWorkspace={workspaces.find((w) => w.id === activeWorkspaceId) || workspaces[0]}
         viewMode={viewMode}
         setViewMode={setViewMode}
         currentUser={currentUser}
@@ -417,6 +421,17 @@ export default function App() {
           }
           setViewMode('landing');
           showToast('Signed out of admin console');
+        }}
+      />
+
+      {/* Connect Real Instagram Account Modal */}
+      <ConnectInstagramModal
+        isOpen={showConnectInstagram}
+        onClose={() => setShowConnectInstagram(false)}
+        currentWorkspace={workspaces.find((w) => w.id === activeWorkspaceId) || workspaces[0]}
+        onAccountConnected={(ws) => {
+          loadAllData(ws.id);
+          showToast(`Connected @${ws.instagramUsername}! Real posts synced from Meta Graph API.`);
         }}
       />
 

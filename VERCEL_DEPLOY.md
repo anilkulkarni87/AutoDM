@@ -55,3 +55,20 @@ Click **Deploy**! Vercel builds the SPA on edge CDN and spins up the serverless 
 
 ## 💡 Do I need to create keys right now to test here?
 **No!** In AI Studio, the application runs with an **In-Memory Zero-Config Engine**. You can simulate Instagram comments, test AI intent classifications, preview conversations, and test nightly retention rollups right in this dashboard without registering for any third-party accounts first.
+
+---
+
+## 🔄 How to Pull Future Updates into Your Repo
+If you cloned via the "Deploy with Vercel" button, your repository is linked directly to your own GitHub account. Whenever updates or bug fixes are published to the original AutoDM repository, sync them with:
+
+```bash
+# Add upstream remote
+git remote add upstream https://github.com/anilkulkarni87/AutoDM.git
+
+# Fetch & merge latest upstream updates
+git fetch upstream
+git merge upstream/main -m "sync: update from upstream"
+
+# Push to your GitHub repo (Vercel redeploys automatically)
+git push origin main
+```

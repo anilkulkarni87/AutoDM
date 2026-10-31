@@ -86,7 +86,16 @@ export const InngestTracesView: React.FC<InngestTracesViewProps> = ({
           </div>
 
           <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
-            {traces.map((trace) => (
+            {traces.length === 0 ? (
+              <div className="p-8 text-center border border-dashed border-slate-800 rounded-xl">
+                <Layers className="w-6 h-6 text-slate-600 mx-auto mb-2" />
+                <p className="text-xs text-slate-400 font-medium">No execution runs yet</p>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Traces appear automatically when a comment webhook is received or simulated.
+                </p>
+              </div>
+            ) : (
+              traces.map((trace) => (
               <div
                 key={trace.runId}
                 onClick={() => setSelectedTraceId(trace.runId)}
@@ -115,7 +124,7 @@ export const InngestTracesView: React.FC<InngestTracesViewProps> = ({
                   <span>{new Date(trace.startedAt).toLocaleTimeString()}</span>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
         </div>
 

@@ -12,6 +12,7 @@ import {
   Terminal,
   ExternalLink,
   FolderGit2,
+  Instagram,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -30,6 +31,8 @@ interface NavbarProps {
   } | null;
   theme?: 'light' | 'dark';
   onToggleTheme?: () => void;
+  onOpenConnectInstagram?: () => void;
+  activeWorkspace?: any;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -38,6 +41,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenLanding,
   onOpenAuth,
   onOpenSetupWizard,
+  onOpenConnectInstagram,
+  activeWorkspace,
   viewMode,
   setViewMode,
   currentUser,
@@ -221,6 +226,34 @@ export const Navbar: React.FC<NavbarProps> = ({
         ) : (
           /* When in the App Console: show workspace tools and admin profile */
           <>
+            {onOpenConnectInstagram && (
+              <button
+                onClick={onOpenConnectInstagram}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                  activeWorkspace?.isRealAccount
+                    ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800/80 shadow-xs'
+                    : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:border-rose-400'
+                }`}
+                title={
+                  activeWorkspace?.isRealAccount
+                    ? `Live Instagram Connected: @${activeWorkspace.instagramUsername}`
+                    : 'Connect your real Instagram account via Meta Graph API'
+                }
+              >
+                <Instagram className={`w-3.5 h-3.5 ${activeWorkspace?.isRealAccount ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500'}`} />
+                <span className="hidden sm:inline font-mono">
+                  {activeWorkspace?.isRealAccount
+                    ? `@${activeWorkspace.instagramUsername}`
+                    : 'Connect Instagram'}
+                </span>
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    activeWorkspace?.isRealAccount ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'
+                  }`}
+                />
+              </button>
+            )}
+
             {onOpenSetupWizard && (
               <button
                 onClick={onOpenSetupWizard}

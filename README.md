@@ -281,6 +281,24 @@ Unlike legacy bots (e.g., ManyChat) that charge per contact and use rigid string
 * **Cause**: Bundlers like Vite 8 depend on `rolldown`, which uses platform-specific native binaries (`@rolldown/binding-wasm32-wasi`). If `vite` is listed in production `dependencies` or imported statically at the top of `server.ts`, Vercel attempts to load it inside the AWS Lambda serverless function (`/var/task`), where the native binary is missing.
 * **Fix**: `vite` and its plugins are kept in `devDependencies`, and `server.ts` dynamically imports `vite` only during local development (`process.env.NODE_ENV !== 'production' && !process.env.VERCEL`). The Vercel serverless function (`/api/index.ts`) executes purely on Express and business logic without bundling Vite or Rolldown.
 
+### 8. How do I sync new updates to my own cloned Vercel repository?
+When you click **Deploy with Vercel**, Vercel creates a new independent repository in your personal GitHub account. To pull the latest bug fixes, performance improvements, and features into your repo:
+
+```bash
+# 1. Open your terminal in your local repository folder
+# 2. Add the original repository as the 'upstream' remote (one-time setup):
+git remote add upstream https://github.com/anilkulkarni87/AutoDM.git
+
+# 3. Fetch the latest updates:
+git fetch upstream
+
+# 4. Merge the latest updates into your main branch:
+git merge upstream/main -m "sync: update from upstream"
+
+# 5. Push to your own GitHub repo (Vercel automatically rebuilds and deploys!):
+git push origin main
+```
+
 ---
 
 ## 📄 License

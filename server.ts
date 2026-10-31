@@ -27,6 +27,28 @@ const ai = new GoogleGenAI({
 let activeGroqApiKey = process.env.GROQ_API_KEY || '';
 let preferredGroqModel = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
+// Meta Instagram Graph API Live Connection State
+interface LiveInstagramConnection {
+  isConnected: boolean;
+  accessToken: string;
+  instagramAccountId: string;
+  instagramUsername: string;
+  name: string;
+  avatarUrl: string;
+  followersCount: number;
+  lastSyncedAt?: string;
+}
+
+let liveInstagramConnection: LiveInstagramConnection = {
+  isConnected: Boolean(process.env.META_ACCESS_TOKEN),
+  accessToken: process.env.META_ACCESS_TOKEN || '',
+  instagramAccountId: process.env.META_INSTAGRAM_ACCOUNT_ID || '',
+  instagramUsername: process.env.META_INSTAGRAM_USERNAME || '',
+  name: '',
+  avatarUrl: '',
+  followersCount: 0,
+};
+
 // ==========================================
 // In-Memory Multi-Tenant State (Turso SQLite emulation)
 // ==========================================
@@ -66,477 +88,44 @@ const db: DbState = {
     lastWarmupAt: new Date().toISOString(),
     lastPurgeRunAt: new Date(Date.now() - 86400000 * 2).toISOString(),
   },
-  setupOrders: [
-    {
-      id: 'dfy_17303001',
-      email: 'clara@studioflow.design',
-      instagramHandle: '@studioflow',
-      preferredContact: 'telegram: @claradesign',
-      plan: 'DONE_FOR_YOU_SETUP',
-      amount: 20,
-      status: 'RECEIVED',
-      createdAt: '2026-10-30T10:14:00Z',
-      notes: 'Need auto-DM link delivery for my new typography reel drop on Friday.',
-    },
-    {
-      id: 'dfy_17303002',
-      email: 'jason@modernfounder.co',
-      instagramHandle: '@modernfounder',
-      preferredContact: 'email: jason@modernfounder.co',
-      plan: 'DONE_FOR_YOU_SETUP',
-      amount: 20,
-      status: 'RECEIVED',
-      createdAt: '2026-10-30T11:28:00Z',
-      notes: 'Please connect to my Creator account and test with our resource sheet.',
-    },
-  ],
-  waitlist: [
-    {
-      id: 'wl_101',
-      email: 'anil77k@gmail.com',
-      source: 'landing_hosted_cloud',
-      createdAt: '2026-10-28T14:22:00Z',
-      status: 'PENDING',
-    },
-    {
-      id: 'wl_102',
-      email: 'sarah.creator@hey.com',
-      source: 'landing_hosted_cloud',
-      createdAt: '2026-10-29T09:15:00Z',
-      status: 'PENDING',
-    },
-    {
-      id: 'wl_103',
-      email: 'marcus@growthmedia.co',
-      source: 'landing_hosted_cloud',
-      createdAt: '2026-10-29T16:40:00Z',
-      status: 'PENDING',
-    },
-    {
-      id: 'wl_104',
-      email: 'elena.design@studio.io',
-      source: 'landing_hosted_cloud',
-      createdAt: '2026-10-30T08:12:00Z',
-      status: 'PENDING',
-    },
-  ],
-  dailyStats: [
-    {
-      id: 'ds_20261026',
-      date: '2026-10-26',
-      workspaceId: 'ws_growth_scale',
-      campaignId: 'cmp_blueprint_reel',
-      totalComments: 3120,
-      totalDmsSent: 3094,
-      totalClicks: 2140,
-      totalLeads: 1480,
-      compressedAt: '2026-10-27T02:00:00Z',
-    },
-    {
-      id: 'ds_20261027',
-      date: '2026-10-27',
-      workspaceId: 'ws_growth_scale',
-      campaignId: 'cmp_blueprint_reel',
-      totalComments: 4520,
-      totalDmsSent: 4490,
-      totalClicks: 3200,
-      totalLeads: 2190,
-      compressedAt: '2026-10-28T02:00:00Z',
-    },
-    {
-      id: 'ds_20261028',
-      date: '2026-10-28',
-      workspaceId: 'ws_growth_scale',
-      campaignId: 'cmp_cost_calculator',
-      totalComments: 1890,
-      totalDmsSent: 1870,
-      totalClicks: 1420,
-      totalLeads: 810,
-      compressedAt: '2026-10-29T02:00:00Z',
-    },
-  ],
-  purgeHistory: [
-    {
-      timestamp: '2026-10-28T02:00:00Z',
-      purgedOlderThanDays: 30,
-      rawMetricsPurged: 9530,
-      conversationsPurged: 3120,
-      dailyStatsCreated: 2,
-      storageReductionPercent: 99.8,
-      kbFreed: 18450,
-    },
-  ],
+  setupOrders: [],
+  waitlist: [],
+  dailyStats: [],
+  purgeHistory: [],
   organizations: [
     {
-      id: 'org_acme_growth',
-      name: 'Acme Growth Labs',
-      createdAt: '2026-01-15T09:00:00Z',
-      billingState: 'pro',
-    },
-    {
-      id: 'org_solopreneur',
-      name: 'Studio Founder',
-      createdAt: '2026-03-01T12:00:00Z',
+      id: 'org_main',
+      name: 'Primary Workspace',
+      createdAt: new Date().toISOString(),
       billingState: 'free',
     },
   ],
   users: [
     {
-      id: 'usr_1',
-      email: 'anil77k@gmail.com',
-      organizationId: 'org_acme_growth',
+      id: 'usr_owner',
+      email: process.env.ADMIN_EMAIL || 'admin@autodm.local',
+      organizationId: 'org_main',
     },
   ],
   workspaces: [
     {
-      id: 'ws_growth_scale',
-      organizationId: 'org_acme_growth',
-      instagramAccountId: 'ig_178414053092',
-      instagramUsername: 'acme.growth',
-      name: 'Acme Growth Official',
-      avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=acmegrowth',
-      encryptedTokenMasked: 'EAAO...94bF2 (AES-256-GCM)',
-      isTokenActive: true,
-      campaignsCount: 3,
-    },
-    {
-      id: 'ws_creator_ai',
-      organizationId: 'org_acme_growth',
-      instagramAccountId: 'ig_178414088921',
-      instagramUsername: 'ai_automation_pro',
-      name: 'AI Automation Pro',
-      avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=aiauto',
-      encryptedTokenMasked: 'EAAO...77xA1 (AES-256-GCM)',
-      isTokenActive: true,
-      campaignsCount: 1,
+      id: 'ws_default',
+      organizationId: 'org_main',
+      instagramAccountId: '',
+      instagramUsername: 'not_connected',
+      name: 'Instagram Account',
+      avatarUrl: '',
+      encryptedTokenMasked: 'Not configured',
+      isTokenActive: false,
+      campaignsCount: 0,
+      isRealAccount: false,
     },
   ],
-  posts: [
-    {
-      id: 'post_reel_9921',
-      mediaType: 'REEL',
-      permalink: 'https://instagram.com/reel/C89xKlO01',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80',
-      caption: '🚀 We built a 100% serverless Instagram DM agent using Inngest & Turso. Comment "BLUEPRINT" below and my AI will send you the full source code + architecture breakdown in your DMs!',
-      commentsCount: 342,
-      likeCount: 2890,
-      publishedAt: '2026-10-24T14:30:00Z',
-    },
-    {
-      id: 'post_carousel_401',
-      mediaType: 'CAROUSEL',
-      permalink: 'https://instagram.com/p/C72xMn902',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80',
-      caption: 'Stop running background workers for Instagram automation. Here is why Edge + Workflows save $400/mo. Comment "SAVE" for the cost calculator sheet.',
-      commentsCount: 184,
-      likeCount: 1420,
-      publishedAt: '2026-10-26T10:15:00Z',
-    },
-    {
-      id: 'post_reel_772',
-      mediaType: 'REEL',
-      permalink: 'https://instagram.com/reel/C811Aa889',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80',
-      caption: 'The complete 2026 Agentic Workflow handbook is ready. Drop "GUIDE" in the comments to receive direct DM access!',
-      commentsCount: 95,
-      likeCount: 910,
-      publishedAt: '2026-10-28T16:00:00Z',
-    },
-  ],
-  campaigns: [
-    {
-      id: 'cmp_blueprint_reel',
-      workspaceId: 'ws_growth_scale',
-      name: 'Serverless Blueprint Reel Viral Funnel',
-      triggerType: 'SPECIFIC_POST',
-      mediaId: 'post_reel_9921',
-      mediaDetails: {
-        caption: '🚀 We built a 100% serverless Instagram DM agent using Inngest & Turso. Comment "BLUEPRINT" below...',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80',
-        permalink: 'https://instagram.com/reel/C89xKlO01',
-      },
-      condition: 'AI_ROUTING',
-      keywords: ['BLUEPRINT', 'SOURCE', 'CODE', 'REPO', 'LINK'],
-      isActive: true,
-      createdAt: '2026-10-24T15:00:00Z',
-      steps: [
-        {
-          id: 'step_1',
-          type: 'WAIT_FOR_FOLLOW',
-          title: 'Verify Account Follower Status',
-          description: 'Inngest step pauses execution up to 5 min. If not following, sends a public comment reminder.',
-          timeoutMinutes: 5,
-          fallback: 'PUBLIC_REPLY_REMINDER',
-        },
-        {
-          id: 'step_2',
-          type: 'ASK_FOR_LEAD',
-          title: 'Dynamic Conversational DM (Lead Magnet)',
-          description: 'Sends initial DM and asks for work email before unlocking repository link.',
-          template: 'Hey {{username}}! Saw your comment on the serverless architecture reel. To send you the GitHub repo + deployment script, what is the best email to send your access token to?',
-          expectedField: 'email',
-        },
-        {
-          id: 'step_3',
-          type: 'AI_QUALIFY',
-          title: 'Gemini Agent Intent & Objection Steering',
-          description: 'Analyzes user reply. If valid email captured, stores in Turso and releases link. If hesitation or question, AI answers naturally.',
-          aiPrompt: 'Validate email syntax or answer user inquiries warmly without losing the lead goal.',
-        },
-        {
-          id: 'step_4',
-          type: 'SEND_PRIVATE_DM',
-          title: 'Fulfill Asset & Track Link Click',
-          description: 'Delivers custom tracking link: https://autodm.edge/r/cmp_blueprint_reel?u={{username}}',
-          template: 'You are all set! Here is your exclusive download link: https://autodm.edge/r/cmp_blueprint_reel?u={{username}} — Check your email inbox too for the setup guide!',
-        },
-      ],
-      stats: {
-        commentsTriggered: 248,
-        dmsSent: 242,
-        linkClicks: 189,
-        leadsCaptured: 164,
-      },
-    },
-    {
-      id: 'cmp_cost_calculator',
-      workspaceId: 'ws_growth_scale',
-      name: 'Serverless Cost Calculator Sheet',
-      triggerType: 'SPECIFIC_POST',
-      mediaId: 'post_carousel_401',
-      mediaDetails: {
-        caption: 'Stop running background workers for Instagram automation. Comment "SAVE" for the cost calculator sheet.',
-        thumbnailUrl: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&auto=format&fit=crop&q=80',
-        permalink: 'https://instagram.com/p/C72xMn902',
-      },
-      condition: 'FUZZY_SEMANTIC',
-      keywords: ['SAVE', 'CALCULATOR', 'COST', 'SHEET'],
-      isActive: true,
-      createdAt: '2026-10-26T11:00:00Z',
-      steps: [
-        {
-          id: 'step_c1',
-          type: 'DELAY_JITTER',
-          title: 'Humanized Anti-Spam Jitter (45s)',
-          description: 'Randomized sleep between 30-60s to mimic organic response.',
-          delaySeconds: 45,
-        },
-        {
-          id: 'step_c2',
-          type: 'SEND_PRIVATE_DM',
-          title: 'Send Instant Calculator Access',
-          template: 'Hey there! Here is the Cloud Cost Comparison Spreadsheet: https://autodm.edge/r/cmp_cost_calculator — enjoy zero-maintenance savings!',
-        },
-      ],
-      stats: {
-        commentsTriggered: 132,
-        dmsSent: 130,
-        linkClicks: 104,
-        leadsCaptured: 42,
-      },
-    },
-    {
-      id: 'cmp_any_post_vip',
-      workspaceId: 'ws_growth_scale',
-      name: 'Global VIP Secret Club Offer',
-      triggerType: 'ANY_POST',
-      condition: 'EXACT_MATCH',
-      keywords: ['VIP', 'SECRET'],
-      isActive: false,
-      createdAt: '2026-10-20T08:00:00Z',
-      steps: [
-        {
-          id: 'step_v1',
-          type: 'SEND_PRIVATE_DM',
-          title: 'Send VIP Portal Access Pass',
-          template: 'Welcome to the inner circle! Your private passcode is #EDGE-NATIVE-2026.',
-        },
-      ],
-      stats: {
-        commentsTriggered: 45,
-        dmsSent: 45,
-        linkClicks: 38,
-        leadsCaptured: 29,
-      },
-    },
-  ],
-  conversations: [
-    {
-      id: 'conv_1',
-      campaignId: 'cmp_blueprint_reel',
-      campaignName: 'Serverless Blueprint Reel Viral Funnel',
-      workspaceId: 'ws_growth_scale',
-      instagramUser: 'dev_sarah_m',
-      instagramUserAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sarah',
-      commentId: 'cmt_10029',
-      commentText: 'Could I get the blueprint repo? Loved the Inngest explanation!',
-      status: 'SENT',
-      collectedLeads: {
-        email: 'sarah.miller@techscale.io',
-      },
-      createdAt: '2026-10-29T10:14:00Z',
-      messages: [
-        {
-          id: 'msg_1',
-          sender: 'bot',
-          text: 'Hey dev_sarah_m! Saw your comment on the serverless architecture reel. To send you the GitHub repo + deployment script, what is the best email to send your access token to?',
-          timestamp: '2026-10-29T10:14:08Z',
-        },
-        {
-          id: 'msg_2',
-          sender: 'user',
-          text: 'sure thing, it is sarah.miller@techscale.io! thanks!',
-          timestamp: '2026-10-29T10:15:22Z',
-        },
-        {
-          id: 'msg_3',
-          sender: 'bot',
-          text: 'You are all set! Here is your exclusive download link: https://autodm.edge/r/cmp_blueprint_reel?u=dev_sarah_m — Check your email inbox too for the setup guide!',
-          timestamp: '2026-10-29T10:15:26Z',
-        },
-      ],
-    },
-    {
-      id: 'conv_2',
-      campaignId: 'cmp_blueprint_reel',
-      campaignName: 'Serverless Blueprint Reel Viral Funnel',
-      workspaceId: 'ws_growth_scale',
-      instagramUser: 'alex_codez',
-      instagramUserAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=alex',
-      commentId: 'cmt_10034',
-      commentText: 'typo: lnik please send me the link!!',
-      status: 'SENT',
-      collectedLeads: {
-        email: 'alex@coderweekly.com',
-      },
-      createdAt: '2026-10-29T09:42:00Z',
-      messages: [
-        {
-          id: 'msg_21',
-          sender: 'bot',
-          text: 'Hey alex_codez! Saw your comment on the serverless architecture reel. To send you the GitHub repo + deployment script, what is the best email to send your access token to?',
-          timestamp: '2026-10-29T09:42:15Z',
-        },
-        {
-          id: 'msg_22',
-          sender: 'user',
-          text: 'why do you need my email instead of posting it here?',
-          timestamp: '2026-10-29T09:43:02Z',
-        },
-        {
-          id: 'msg_23',
-          sender: 'bot',
-          text: 'Totally understand! Meta limits raw code URLs in public comments to prevent spam filtering, plus we email you one-click Vercel deploy credentials. What email works best for you?',
-          timestamp: '2026-10-29T09:43:05Z',
-        },
-        {
-          id: 'msg_24',
-          sender: 'user',
-          text: 'gotcha that makes sense: alex@coderweekly.com',
-          timestamp: '2026-10-29T09:44:10Z',
-        },
-        {
-          id: 'msg_25',
-          sender: 'bot',
-          text: 'You are all set! Here is your exclusive download link: https://autodm.edge/r/cmp_blueprint_reel?u=alex_codez — Check your email inbox too!',
-          timestamp: '2026-10-29T09:44:14Z',
-        },
-      ],
-    },
-    {
-      id: 'conv_3',
-      campaignId: 'cmp_cost_calculator',
-      campaignName: 'Serverless Cost Calculator Sheet',
-      workspaceId: 'ws_growth_scale',
-      instagramUser: 'growth_marco',
-      instagramUserAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=marco',
-      commentId: 'cmt_10055',
-      commentText: 'SAVE',
-      status: 'SENT',
-      createdAt: '2026-10-29T08:20:00Z',
-      messages: [
-        {
-          id: 'msg_31',
-          sender: 'bot',
-          text: 'Hey there! Here is the Cloud Cost Comparison Spreadsheet: https://autodm.edge/r/cmp_cost_calculator — enjoy zero-maintenance savings!',
-          timestamp: '2026-10-29T08:20:45Z',
-        },
-      ],
-    },
-  ],
-  metrics: [
-    // Pre-populate aggregated ledger metrics for the past 24 hours
-    { id: 'm_1', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T07:00:00Z', metricType: 'COMMENT_RECEIVED', campaignId: 'cmp_blueprint_reel' },
-    { id: 'm_2', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T07:01:00Z', metricType: 'DM_SENT', campaignId: 'cmp_blueprint_reel' },
-    { id: 'm_3', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T07:05:00Z', metricType: 'LINK_CLICK', campaignId: 'cmp_blueprint_reel' },
-    { id: 'm_4', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T07:06:00Z', metricType: 'LEAD_CAPTURED', campaignId: 'cmp_blueprint_reel' },
-    { id: 'm_5', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T08:00:00Z', metricType: 'COMMENT_RECEIVED', campaignId: 'cmp_cost_calculator' },
-    { id: 'm_6', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T08:00:45Z', metricType: 'DM_SENT', campaignId: 'cmp_cost_calculator' },
-    { id: 'm_7', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T08:12:00Z', metricType: 'LINK_CLICK', campaignId: 'cmp_cost_calculator' },
-    { id: 'm_8', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T09:00:00Z', metricType: 'COMMENT_RECEIVED', campaignId: 'cmp_blueprint_reel' },
-    { id: 'm_9', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T09:00:30Z', metricType: 'DM_SENT', campaignId: 'cmp_blueprint_reel' },
-    { id: 'm_10', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T09:14:00Z', metricType: 'LEAD_CAPTURED', campaignId: 'cmp_blueprint_reel' },
-    { id: 'm_11', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T10:00:00Z', metricType: 'COMMENT_RECEIVED', campaignId: 'cmp_blueprint_reel' },
-    { id: 'm_12', workspaceId: 'ws_growth_scale', timestamp: '2026-10-29T10:00:15Z', metricType: 'DM_SENT', campaignId: 'cmp_blueprint_reel' },
-  ],
-  inngestTraces: [
-    {
-      runId: 'run_inngest_01j9ab7z',
-      eventId: 'evt_ig_cmt_10029',
-      functionId: 'instagram-comment-workflow',
-      status: 'completed',
-      startedAt: '2026-10-29T10:14:00Z',
-      completedAt: '2026-10-29T10:15:26Z',
-      totalDurationMs: 42,
-      matchedCampaignId: 'cmp_blueprint_reel',
-      matchedCampaignName: 'Serverless Blueprint Reel Viral Funnel',
-      aiClassification: {
-        matched: true,
-        confidence: 0.98,
-        detectedIntent: 'REQUEST_BLUEPRINT_CODE',
-        correctedKeyword: 'BLUEPRINT',
-        reasoning: 'User asked "Could I get the blueprint repo? Loved the Inngest explanation!", demonstrating unambiguous intent to access the blueprint code magnet.',
-      },
-      steps: [
-        {
-          stepId: 'step_evaluate_intent',
-          name: 'evaluate-intent-ai',
-          type: 'EVALUATE',
-          status: 'completed',
-          durationMs: 14,
-          timestamp: '2026-10-29T10:14:00Z',
-          output: { matched: true, confidence: 0.98, intent: 'REQUEST_BLUEPRINT_CODE' },
-        },
-        {
-          stepId: 'step_verify_follow',
-          name: 'verify-follow-status',
-          type: 'WAIT_FOR_FOLLOW',
-          status: 'completed',
-          durationMs: 8,
-          timestamp: '2026-10-29T10:14:01Z',
-          output: { isFollower: true },
-        },
-        {
-          stepId: 'step_send_lead_dm',
-          name: 'send-lead-request-dm',
-          type: 'ASK_FOR_LEAD',
-          status: 'completed',
-          durationMs: 12,
-          timestamp: '2026-10-29T10:14:08Z',
-          output: { metaMessageId: 'mid.1009834289', recipient: 'dev_sarah_m' },
-        },
-        {
-          stepId: 'step_record_metric',
-          name: 'record-ledger-metric',
-          type: 'RECORD_METRIC',
-          status: 'completed',
-          durationMs: 4,
-          timestamp: '2026-10-29T10:15:26Z',
-          output: { ledgerRowId: 'm_4', table: 'Metric' },
-        },
-      ],
-    },
-  ],
+  posts: [],
+  campaigns: [],
+  conversations: [],
+  metrics: [],
+  inngestTraces: [],
 };
 
 // ==========================================
@@ -903,6 +492,186 @@ app.post('/api/groq/set-model', (req: Request, res: Response) => {
   res.status(400).json({ error: 'Invalid model name' });
 });
 
+// ==========================================
+// Meta Instagram Graph API Live Account Connection
+// ==========================================
+
+// Get connection status and webhook configuration
+app.get('/api/instagram/connection-status', (req: Request, res: Response) => {
+  const host = req.headers.host || 'localhost:3000';
+  const proto = req.headers['x-forwarded-proto'] || 'http';
+  const appBaseUrl = process.env.APP_URL || `${proto}://${host}`;
+
+  res.json({
+    isConnected: liveInstagramConnection.isConnected,
+    instagramUsername: liveInstagramConnection.instagramUsername,
+    instagramAccountId: liveInstagramConnection.instagramAccountId,
+    name: liveInstagramConnection.name,
+    avatarUrl: liveInstagramConnection.avatarUrl,
+    followersCount: liveInstagramConnection.followersCount,
+    lastSyncedAt: liveInstagramConnection.lastSyncedAt,
+    webhookUrl: `${appBaseUrl}/api/webhooks/instagram`,
+    verifyToken: process.env.META_VERIFY_TOKEN || 'autodm_edge_secret_verify_token_2026',
+    metaAppId: process.env.META_APP_ID || '',
+    maskedToken: liveInstagramConnection.accessToken
+      ? `${liveInstagramConnection.accessToken.substring(0, 6)}...${liveInstagramConnection.accessToken.substring(liveInstagramConnection.accessToken.length - 4)}`
+      : null,
+  });
+});
+
+// Connect real Instagram account with Meta Page Access Token & Account ID
+app.post('/api/instagram/connect-account', async (req: Request, res: Response) => {
+  const { accessToken, instagramAccountId, customUsername } = req.body;
+
+  if (!accessToken || typeof accessToken !== 'string' || !accessToken.trim()) {
+    return res.status(400).json({ success: false, error: 'Please provide a valid Meta Page Access Token.' });
+  }
+
+  const cleanToken = accessToken.trim();
+  const cleanAccountId = (instagramAccountId && typeof instagramAccountId === 'string') ? instagramAccountId.trim() : '';
+
+  try {
+    // 1. Test token against Meta Graph API
+    const targetEndpoint = cleanAccountId
+      ? `https://graph.facebook.com/v21.0/${cleanAccountId}?fields=id,name,username,profile_picture_url,followers_count&access_token=${cleanToken}`
+      : `https://graph.facebook.com/v21.0/me?fields=id,name,username,profile_picture_url,accounts{id,name,instagram_business_account{id,username,name,profile_picture_url}}&access_token=${cleanToken}`;
+
+    const metaRes = await fetch(targetEndpoint);
+    const metaData = await metaRes.json();
+
+    if (!metaRes.ok || metaData.error) {
+      return res.status(400).json({
+        success: false,
+        error: metaData.error?.message || 'Meta Graph API token verification failed. Please check permissions.',
+      });
+    }
+
+    // Resolve Instagram Account Profile details
+    let resolvedId = cleanAccountId;
+    let resolvedUsername = customUsername || '';
+    let resolvedName = '';
+    let resolvedAvatar = '';
+    let resolvedFollowers = 0;
+
+    if (cleanAccountId && metaData.id) {
+      resolvedId = metaData.id;
+      resolvedUsername = metaData.username || customUsername || 'creator';
+      resolvedName = metaData.name || resolvedUsername;
+      resolvedAvatar = metaData.profile_picture_url || '';
+      resolvedFollowers = metaData.followers_count || 0;
+    } else if (metaData.accounts?.data?.[0]?.instagram_business_account) {
+      const ig = metaData.accounts.data[0].instagram_business_account;
+      resolvedId = ig.id;
+      resolvedUsername = ig.username || customUsername || metaData.accounts.data[0].name;
+      resolvedName = ig.name || metaData.accounts.data[0].name;
+      resolvedAvatar = ig.profile_picture_url || '';
+    } else {
+      resolvedId = metaData.id;
+      resolvedUsername = metaData.username || customUsername || metaData.name || 'creator';
+      resolvedName = metaData.name || resolvedUsername;
+      resolvedAvatar = metaData.profile_picture_url || '';
+    }
+
+    // 2. Fetch real reels and posts from their actual Instagram feed!
+    let realPosts: any[] = [];
+    try {
+      const mediaUrl = `https://graph.facebook.com/v21.0/${resolvedId}/media?fields=id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,comments_count,like_count&limit=12&access_token=${cleanToken}`;
+      const mediaRes = await fetch(mediaUrl);
+      if (mediaRes.ok) {
+        const mediaData = await mediaRes.json();
+        if (Array.isArray(mediaData.data) && mediaData.data.length > 0) {
+          realPosts = mediaData.data.map((m: any) => ({
+            id: m.id,
+            mediaType: m.media_type === 'VIDEO' ? 'REEL' : m.media_type === 'CAROUSEL_ALBUM' ? 'CAROUSEL' : 'FEED_POST',
+            permalink: m.permalink || `https://instagram.com/p/${m.id}`,
+            thumbnailUrl: m.thumbnail_url || m.media_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80',
+            caption: m.caption || 'Instagram Post',
+            commentsCount: m.comments_count || 0,
+            likeCount: m.like_count || 0,
+            publishedAt: m.timestamp || new Date().toISOString(),
+          }));
+        }
+      }
+    } catch (mediaErr) {
+      console.warn('Could not fetch real media, continuing with profile connection:', mediaErr);
+    }
+
+    // Update live connection state
+    liveInstagramConnection = {
+      isConnected: true,
+      accessToken: cleanToken,
+      instagramAccountId: resolvedId,
+      instagramUsername: resolvedUsername,
+      name: resolvedName,
+      avatarUrl: resolvedAvatar || `https://api.dicebear.com/7.x/identicon/svg?seed=${resolvedUsername}`,
+      followersCount: resolvedFollowers,
+      lastSyncedAt: new Date().toISOString(),
+    };
+
+    // Update workspace in db
+    const realWorkspace = {
+      id: `ws_${resolvedUsername.replace(/[^a-zA-Z0-9]/g, '_')}`,
+      organizationId: db.organizations[0]?.id || 'org_creator',
+      instagramAccountId: resolvedId,
+      instagramUsername: resolvedUsername,
+      name: resolvedName,
+      avatarUrl: liveInstagramConnection.avatarUrl,
+      encryptedTokenMasked: `${cleanToken.substring(0, 6)}...${cleanToken.substring(cleanToken.length - 4)} (Live Graph API)`,
+      isTokenActive: true,
+      campaignsCount: db.campaigns.length,
+      isRealAccount: true,
+      followersCount: resolvedFollowers,
+    };
+
+    db.workspaces[0] = realWorkspace;
+
+    // If real posts were fetched, replace db.posts so user can choose their live posts!
+    if (realPosts.length > 0) {
+      db.posts = realPosts;
+    }
+
+    return res.json({
+      success: true,
+      message: `Connected real Instagram account @${resolvedUsername}! ${realPosts.length} real posts loaded.`,
+      workspace: realWorkspace,
+      postsCount: db.posts.length,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      error: `Network error connecting to Meta Graph API: ${err.message || String(err)}`,
+    });
+  }
+});
+
+// Disconnect real account and revert to sandbox demo
+app.post('/api/instagram/disconnect', (_req: Request, res: Response) => {
+  liveInstagramConnection = {
+    isConnected: false,
+    accessToken: '',
+    instagramAccountId: '',
+    instagramUsername: 'acme.growth',
+    name: 'Acme Growth (Sandbox)',
+    avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=acmegrowth',
+    followersCount: 14820,
+  };
+
+  db.workspaces[0] = {
+    id: 'ws_growth_scale',
+    organizationId: 'org_acme_growth',
+    instagramAccountId: 'ig_178414053092',
+    instagramUsername: 'acme.growth',
+    name: 'Acme Growth Official (Demo)',
+    avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=acmegrowth',
+    encryptedTokenMasked: 'EAAO...94bF2 (Sandbox Mode)',
+    isTokenActive: true,
+    campaignsCount: 3,
+    isRealAccount: false,
+  };
+
+  res.json({ success: true, message: 'Disconnected real account. Restored sandbox mode.' });
+});
+
 // 1. Meta Webhook Verification (GET /api/webhooks/instagram)
 // Exactly according to Meta Graph API webhook spec
 app.get('/api/webhooks/instagram', (req: Request, res: Response) => {
@@ -1027,6 +796,38 @@ app.post('/api/webhooks/instagram', async (req: Request, res: Response) => {
           },
         });
       } else if (step.type === 'SEND_PRIVATE_DM') {
+        let metaDispatchResult: any = { status: 'ACCEPTED_BY_META_GATEWAY', messageId: `mid_${Date.now()}` };
+
+        // If real Meta Graph API access token is present, send live Instagram Private Reply / DM!
+        if (liveInstagramConnection.isConnected && liveInstagramConnection.accessToken) {
+          try {
+            const dmText = step.template
+              ? step.template.replace(/\{\{username\}\}/g, commenterUsername)
+              : `Hey @${commenterUsername}! Here is your link: https://${req.headers.host || 'autodm.edge'}/r/${matchedCampaign.id}?u=${commenterUsername}`;
+
+            const metaRes = await fetch(`https://graph.facebook.com/v21.0/me/messages?access_token=${liveInstagramConnection.accessToken}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                recipient: {
+                  comment_id: commentId,
+                },
+                message: {
+                  text: dmText,
+                },
+              }),
+            });
+            const metaJson = await metaRes.json();
+            metaDispatchResult = {
+              status: metaRes.ok ? 'DELIVERED_VIA_META_GRAPH_API' : 'META_GRAPH_API_ERROR',
+              messageId: metaJson.message_id || `mid_${Date.now()}`,
+              metaResponse: metaJson,
+            };
+          } catch (e: any) {
+            metaDispatchResult = { status: 'DISPATCH_EXCEPTION', error: e.message };
+          }
+        }
+
         trace.steps.push({
           stepId: step.id,
           name: 'deliver-private-dm',
@@ -1034,10 +835,7 @@ app.post('/api/webhooks/instagram', async (req: Request, res: Response) => {
           status: 'completed',
           durationMs: 12,
           timestamp: new Date().toISOString(),
-          output: {
-            status: 'ACCEPTED_BY_META_GATEWAY',
-            messageId: `mid_${Date.now()}`,
-          },
+          output: metaDispatchResult,
         });
       } else if (step.type === 'DELAY_JITTER') {
         trace.steps.push({
@@ -1853,9 +1651,9 @@ app.get('/api/cron/warmup', (_req: Request, res: Response) => {
 
 // 3. Physical Technical Limits & Quota Guard (GET /api/system/limits)
 app.get('/api/system/limits', (_req: Request, res: Response) => {
-  const inngestUsed = 14280 + db.inngestTraces.length * 4;
+  const inngestUsed = db.inngestTraces.length * 4;
   const inngestLimit = 50000;
-  const tursoUsedMb = Number((18.4 + (db.metrics.length + db.conversations.length) * 0.002).toFixed(2));
+  const tursoUsedMb = Number(((db.metrics.length + db.conversations.length) * 0.002).toFixed(2));
   const tursoLimitMb = 500;
 
   res.json({
@@ -1868,7 +1666,7 @@ app.get('/api/system/limits', (_req: Request, res: Response) => {
       usedMb: tursoUsedMb,
       limitMb: tursoLimitMb,
       storagePct: Number(((tursoUsedMb / tursoLimitMb) * 100).toFixed(2)),
-      rowReadsMonth: 342190,
+      rowReadsMonth: db.metrics.length * 3,
       rowReadsLimit: 9000000000,
     },
     vercelEdgeTimeout: {

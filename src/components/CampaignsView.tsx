@@ -124,13 +124,33 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
         </button>
       </div>
 
-      {/* Campaigns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {campaigns.map((camp) => (
-          <div
-            key={camp.id}
-            className="group bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-rose-300 dark:hover:border-rose-900/60 rounded-2xl p-5 flex flex-col justify-between transition-all shadow-xs hover:shadow-md hover:shadow-stone-900/5"
+      {/* Campaigns Grid / Empty State */}
+      {campaigns.length === 0 ? (
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-12 text-center max-w-lg mx-auto space-y-4 shadow-xs">
+          <div className="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-stone-900 dark:text-white">No campaigns created yet</h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1.5 leading-relaxed">
+              Create your first automation funnel to start turning comments on your Reels into verified DMs, link clicks, and leads.
+            </p>
+          </div>
+          <button
+            onClick={handleCreateNew}
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 rounded-xl shadow-sm shadow-rose-500/25 transition-all cursor-pointer"
           >
+            <Plus className="w-4 h-4" />
+            <span>Create Your First Campaign</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {campaigns.map((camp) => (
+            <div
+              key={camp.id}
+              className="group bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-rose-300 dark:hover:border-rose-900/60 rounded-2xl p-5 flex flex-col justify-between transition-all shadow-xs hover:shadow-md hover:shadow-stone-900/5"
+            >
             <div>
               {/* Header row */}
               <div className="flex items-start justify-between gap-2 mb-3">
@@ -265,6 +285,7 @@ export const CampaignsView: React.FC<CampaignsViewProps> = ({
           </div>
         ))}
       </div>
+    )}
     </div>
   );
 };
