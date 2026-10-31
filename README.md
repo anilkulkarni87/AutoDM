@@ -200,6 +200,10 @@ Unlike legacy bots (e.g., ManyChat) that charge per contact and use rigid string
 ### 4. What is `CRON_SECRET`?
 * Vercel Cron jobs send an `Authorization: Bearer <CRON_SECRET>` header with each automated call. Setting `CRON_SECRET` ensures that random external visitors cannot trigger your database purge endpoint (`/api/cron/purge`).
 
+### 5. Vercel Build Error: "Conflicting peer dependency (esbuild / vite)"
+* **Cause**: `npm install` on modern Node versions can halt when peer dependencies between Vite 8, Tailwind 4, and bundler tooling have overlapping ranges.
+* **Fix**: The repository includes a `/.npmrc` file with `legacy-peer-deps=true`, and removes unnecessary duplicate `esbuild` overrides from `devDependencies`. If deploying an existing fork, ensure `.npmrc` is present in your repo root.
+
 ---
 
 ## 📄 License
