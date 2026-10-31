@@ -49,11 +49,18 @@ export default function App() {
     name: string;
     avatarUrl: string;
     role: string;
-  } | null>({
-    email: 'anil77k@gmail.com',
-    name: 'Anil K.',
-    avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=anil77k',
-    role: 'Workspace Owner',
+  } | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('autodm_admin_session');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error('Failed to parse admin session', e);
+        }
+      }
+    }
+    return null;
   });
 
   const [isSimulating, setIsSimulating] = useState(false);
@@ -397,11 +404,19 @@ export default function App() {
         currentUser={currentUser}
         onLogin={(user) => {
           setCurrentUser(user);
-          showToast(`Logged in as ${user.email}`);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('autodm_admin_session', JSON.stringify(user));
+          }
+          setViewMode('app');
+          showToast(`Welcome, ${user.name}! Admin console unlocked.`);
         }}
         onLogout={() => {
           setCurrentUser(null);
-          showToast('Signed out successfully');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('autodm_admin_session');
+          }
+          setViewMode('landing');
+          showToast('Signed out of admin console');
         }}
       />
 

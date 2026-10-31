@@ -33,11 +33,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onLogin,
   onLogout,
 }) => {
-  const [authMethod, setAuthMethod] = useState<'email' | 'instagram' | 'byoMeta'>('email');
-  const [emailInput, setEmailInput] = useState(currentUser?.email || 'anil77k@gmail.com');
-  const [passwordInput, setPasswordInput] = useState('••••••••••••');
-  const [byoAppId, setByoAppId] = useState('178414053092');
-  const [byoAppSecret, setByoAppSecret] = useState('••••••••••••••••••••••••••••••••');
+  const [authMethod, setAuthMethod] = useState<'email' | 'byoMeta' | 'instagram'>('email');
+  const [emailInput, setEmailInput] = useState(currentUser?.email || '');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [byoAppId, setByoAppId] = useState('');
+  const [byoAppSecret, setByoAppSecret] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authSuccess, setAuthSuccess] = useState(false);
 
@@ -48,17 +48,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setTimeout(() => {
       setIsAuthenticating(false);
       setAuthSuccess(true);
+      const email = emailInput.trim() || 'admin@selfhosted.local';
+      const name = email.includes('@') ? email.split('@')[0] : 'Admin';
+      const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
       onLogin({
-        email: emailInput || 'anil77k@gmail.com',
-        name: emailInput.split('@')[0] || 'Anil K.',
-        avatarUrl: `https://api.dicebear.com/7.x/identicon/svg?seed=${emailInput}`,
-        role: method === 'byoMeta' ? 'Self-Hosted Admin' : 'Workspace Owner',
+        email,
+        name: capitalizedName,
+        avatarUrl: `https://api.dicebear.com/7.x/identicon/svg?seed=${email}`,
+        role: method === 'byoMeta' ? 'Self-Hosted Owner' : 'Instance Admin',
       });
       setTimeout(() => {
         setAuthSuccess(false);
         onClose();
-      }, 800);
-    }, 600);
+      }, 700);
+    }, 500);
   };
 
   return (
@@ -179,31 +182,37 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </button>
             </div>
 
-            {/* TAB 1: Email Sign In */}
+            {/* TAB 1: Admin Sign In */}
             {authMethod === 'email' && (
-              <div className="space-y-3">
+              <div className="space-y-3.5">
+                <div className="p-3 bg-[#FAF7F2] dark:bg-stone-950 border border-[#E9E4DC] dark:border-stone-800 rounded-xl text-[11px] text-[#5A554D] dark:text-stone-400">
+                  <span className="font-semibold text-[#1E1C1A] dark:text-white block mb-0.5">Self-Host Owner Access</span>
+                  Logging in unlocks the administrative console to manage campaigns, Meta tokens, and AI rules on your deployment.
+                </div>
+
                 <div>
-                  <label className="block text-[11px] font-semibold text-stone-700 dark:text-stone-300 mb-1">Email Address</label>
+                  <label className="block text-[11px] font-semibold text-stone-700 dark:text-stone-300 mb-1">Admin Email</label>
                   <div className="relative">
                     <input
                       type="email"
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="you@company.com"
-                      className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 rounded-xl pl-8 pr-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 font-mono"
+                      placeholder="admin@yourdomain.com"
+                      className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 rounded-xl pl-8 pr-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1B382B]/20 font-mono"
                     />
                     <Mail className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-2.5" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-stone-700 dark:text-stone-300 mb-1">Password</label>
+                  <label className="block text-[11px] font-semibold text-stone-700 dark:text-stone-300 mb-1">Admin Password</label>
                   <div className="relative">
                     <input
                       type="password"
                       value={passwordInput}
                       onChange={(e) => setPasswordInput(e.target.value)}
-                      className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 rounded-xl pl-8 pr-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 font-mono"
+                      placeholder="••••••••••••"
+                      className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-700 rounded-xl pl-8 pr-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1B382B]/20 font-mono"
                     />
                     <Lock className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-2.5" />
                   </div>
@@ -212,9 +221,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   onClick={() => handleSimulateLogin('email')}
                   disabled={isAuthenticating}
-                  className="w-full py-2.5 text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 rounded-xl shadow-sm shadow-rose-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2.5 text-xs font-semibold text-white bg-[#1B382B] hover:bg-[#142C21] rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <span>{isAuthenticating ? 'Signing in...' : 'Sign In with Email'}</span>
+                  <span>{isAuthenticating ? 'Unlocking Console...' : 'Unlock Admin Console'}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

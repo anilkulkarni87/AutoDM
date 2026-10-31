@@ -60,34 +60,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           </span>
         </button>
 
-        {/* View Switcher: Landing vs Console */}
-        <div className="hidden lg:flex items-center bg-[#EFECE6] dark:bg-stone-900/90 border border-[#E9E4DC] dark:border-stone-800 p-0.5 rounded-full text-xs">
+        {/* When inside the App Console, show a quick link to return to the public website */}
+        {viewMode === 'app' && (
           <button
             onClick={() => setViewMode('landing')}
-            className={`px-3 py-1 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer font-medium ${
-              viewMode === 'landing'
-                ? 'bg-white dark:bg-stone-800 text-[#1E1C1A] dark:text-white shadow-xs font-semibold'
-                : 'text-[#6B655B] dark:text-stone-400 hover:text-black dark:hover:text-stone-200'
-            }`}
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-[#6B655B] dark:text-stone-400 hover:text-[#1E1C1A] dark:hover:text-white hover:bg-[#EFECE6] dark:hover:bg-stone-800/80 transition-colors cursor-pointer"
+            title="Return to public landing page"
           >
             <Globe className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Overview</span>
+            <span>← View Website</span>
           </button>
-          <button
-            onClick={() => setViewMode('app')}
-            className={`px-3 py-1 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer font-medium ${
-              viewMode === 'app'
-                ? 'bg-white dark:bg-stone-800 text-[#1E1C1A] dark:text-white shadow-xs font-semibold'
-                : 'text-[#6B655B] dark:text-stone-400 hover:text-black dark:hover:text-stone-200'
-            }`}
-          >
-            <LayoutDashboard className="w-3.5 h-3.5 text-[#1B382B] dark:text-emerald-400" />
-            <span>App Console</span>
-          </button>
-        </div>
+        )}
       </div>
 
-      {/* Zone 2: Navigation Links (When in App Console) */}
+      {/* Zone 2: Navigation Links */}
       {viewMode === 'app' ? (
         <nav className="hidden xl:flex items-center gap-1 text-sm font-medium text-stone-600 dark:text-stone-400">
           <button
@@ -211,43 +197,69 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         )}
 
-        {onOpenSetupWizard && (
-          <button
-            onClick={onOpenSetupWizard}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/60 rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
-            title="1-Click Self-Host Wizard (Groq AI Free Tier + Vercel)"
-          >
-            <Zap className="w-3.5 h-3.5 fill-current" />
-            <span className="hidden sm:inline">1-Click Self-Host</span>
-            <span className="sm:hidden">Self-Host</span>
-          </button>
-        )}
-
-        {/* User Account / Login Button */}
-        <button
-          onClick={onOpenAuth}
-          className="flex items-center gap-2 pl-2 pr-2.5 py-1 bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-800 rounded-lg text-xs transition-colors cursor-pointer"
-          title={currentUser ? `Signed in as ${currentUser.email}` : 'Sign in / Switch Account'}
-        >
-          {currentUser ? (
-            <>
-              <img
-                src={currentUser.avatarUrl}
-                alt={currentUser.name}
-                className="w-5 h-5 rounded-full border border-rose-300 dark:border-rose-500/40 bg-stone-200 dark:bg-stone-800 object-cover"
-              />
-              <span className="hidden sm:inline font-semibold text-stone-800 dark:text-stone-200 max-w-[100px] truncate">
-                {currentUser.name}
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            </>
+        {/* When on the public landing page: show clean minimal action */}
+        {viewMode === 'landing' ? (
+          currentUser ? (
+            <button
+              onClick={() => setViewMode('app')}
+              className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium text-white bg-[#1B382B] hover:bg-[#142C21] rounded-full transition-all shadow-xs cursor-pointer ml-1"
+              title="Open your AutoDM Admin Console"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>Console</span>
+            </button>
           ) : (
-            <>
-              <User className="w-4 h-4 text-stone-500" />
-              <span className="text-stone-800 dark:text-stone-200 font-semibold">Sign In</span>
-            </>
-          )}
-        </button>
+            <button
+              onClick={onOpenAuth}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-[#234234] dark:text-[#E2EFE7] hover:bg-[#EFECE6] dark:hover:bg-stone-800 border border-[#C5DEC9] dark:border-stone-700 rounded-full transition-colors cursor-pointer ml-1"
+              title="Admin Login"
+            >
+              <User className="w-3.5 h-3.5 text-[#234234] dark:text-emerald-400" />
+              <span>Log In</span>
+            </button>
+          )
+        ) : (
+          /* When in the App Console: show workspace tools and admin profile */
+          <>
+            {onOpenSetupWizard && (
+              <button
+                onClick={onOpenSetupWizard}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/60 rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
+                title="1-Click Self-Host Wizard (Groq AI Free Tier + Vercel)"
+              >
+                <Zap className="w-3.5 h-3.5 fill-current" />
+                <span className="hidden sm:inline">1-Click Self-Host</span>
+                <span className="sm:hidden">Self-Host</span>
+              </button>
+            )}
+
+            {/* Admin User Account / Switch Button */}
+            <button
+              onClick={onOpenAuth}
+              className="flex items-center gap-2 pl-2 pr-2.5 py-1 bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-800 rounded-lg text-xs transition-colors cursor-pointer"
+              title={currentUser ? `Signed in as ${currentUser.email}` : 'Sign in / Switch Account'}
+            >
+              {currentUser ? (
+                <>
+                  <img
+                    src={currentUser.avatarUrl}
+                    alt={currentUser.name}
+                    className="w-5 h-5 rounded-full border border-rose-300 dark:border-rose-500/40 bg-stone-200 dark:bg-stone-800 object-cover"
+                  />
+                  <span className="hidden sm:inline font-semibold text-stone-800 dark:text-stone-200 max-w-[100px] truncate">
+                    {currentUser.name}
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                </>
+              ) : (
+                <>
+                  <User className="w-4 h-4 text-stone-500" />
+                  <span className="text-stone-800 dark:text-stone-200 font-semibold">Sign In</span>
+                </>
+              )}
+            </button>
+          </>
+        )}
       </div>
     </header>
   );
