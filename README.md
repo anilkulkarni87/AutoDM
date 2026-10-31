@@ -79,14 +79,17 @@ Turso is a distributed serverless SQLite database with a generous free tier (9 b
 Inngest handles asynchronous background execution, step-by-step delays, and follower verification without needing continuous server instances.
 
 1. Go to **[inngest.com](https://inngest.com)** and create a free account (50,000 runs/month included).
-2. Click **Create App** or open your default environment.
-3. Go to **Manage > API Keys**.
+2. Open your default environment (or click **Create App**).
+3. In the sidebar, navigate to **Manage > API Keys**.
 4. Copy:
    * **Event Key** (used to trigger workflows)
    * **Signing Key** (used to verify webhooks)
 5. Set these in your environment:
    * `INNGEST_EVENT_KEY="your_inngest_event_key"`
    * `INNGEST_SIGNING_KEY="your_inngest_signing_key"`
+
+> 💡 **Do I need to run a local server for Inngest?**  
+> **No.** Inngest's website mentions running a local CLI server (`npx inngest-cli dev`) for offline testing. You can **ignore and skip that completely**. When deployed to Vercel, Inngest Cloud connects to your serverless URL automatically. For testing, AutoDM has a built-in simulator inside **App Console → Webhook Tester**.
 
 ---
 
@@ -270,6 +273,13 @@ Unlike legacy bots (e.g., ManyChat) that charge per contact and use rigid string
 ### 5. Vercel Build Error: "Conflicting peer dependency (esbuild / vite)"
 * **Cause**: `npm install` on modern Node versions can halt when peer dependencies between Vite 8, Tailwind 4, and bundler tooling have overlapping ranges.
 * **Fix**: The repository includes a `/.npmrc` file with `legacy-peer-deps=true`, and removes unnecessary duplicate `esbuild` overrides from `devDependencies`. If deploying an existing fork, ensure `.npmrc` is present in your repo root.
+
+### 6. Do I need to run a local server for Inngest?
+* **No.** When you register at `inngest.com`, the onboarding screen suggests running `npx inngest-cli@latest dev`. You can **safely skip this prompt**. Inngest Cloud handles event delivery to your deployed Vercel URL directly over the web. For testing flows before going live, open **App Console → Webhook Tester** inside your app.
+
+### 7. Vercel Runtime Error: "Cannot find native binding ... rolldown"
+* **Cause**: Bundlers like Vite 8 depend on `rolldown`, which uses platform-specific native binaries (`@rolldown/binding-wasm32-wasi`). If `vite` is listed in production `dependencies` or imported statically at the top of `server.ts`, Vercel attempts to load it inside the AWS Lambda serverless function (`/var/task`), where the native binary is missing.
+* **Fix**: `vite` and its plugins are kept in `devDependencies`, and `server.ts` dynamically imports `vite` only during local development (`process.env.NODE_ENV !== 'production' && !process.env.VERCEL`). The Vercel serverless function (`/api/index.ts`) executes purely on Express and business logic without bundling Vite or Rolldown.
 
 ---
 
